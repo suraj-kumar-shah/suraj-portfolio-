@@ -5,6 +5,7 @@ import {
   Download, Code, Sparkles, ChevronRight, Terminal,
   Cloud, Cpu, GitBranch, Zap, ArrowDown
 } from 'lucide-react'
+import profileImage from '../assets/profile.jpeg' // Import profile image
 
 /* ═══════════════════════════════════════════
    TYPEWRITER HOOK
@@ -207,7 +208,8 @@ const ProfileImage: React.FC = () => {
         <div className="relative w-56 h-56 md:w-64 md:h-64 rounded-full overflow-hidden"
           style={{ border:'2.5px solid rgba(34,211,238,0.3)' }}>
           <img
-            src="/src/assets/profile.jpeg" alt="Suraj Kumar Sah"
+            src={profileImage} // Use imported image
+            alt="Suraj Kumar Sah"
             className="w-full h-full object-cover"
             style={{ transform:`scale(${hov?1.06:1})`, transition:'transform 0.5s ease' }}
           />

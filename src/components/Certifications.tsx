@@ -2,6 +2,13 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { Award, ExternalLink, Eye } from 'lucide-react'
+// Import all certificate images
+import cppCert from '../assets/certificates/cpp-summer-training.png'
+import awsCert from '../assets/certificates/aws-cloud-foundations.png'
+import oracleCert from '../assets/certificates/oracle-cloud.png'
+import nptelCert from '../assets/certificates/advanced-computer-networks.png'
+import sqlCert from '../assets/certificates/sql-advanced.png'
+import symposiumCert from '../assets/certificates/SYMPOSIUM.png'
 
 const Certifications = () => {
   const [ref, inView] = useInView({
@@ -15,7 +22,7 @@ const Certifications = () => {
       issuer: "CSE PATHSHALA",
       date: "August 2025",
       link: "#",
-      image: "/src/assets/certificates/cpp-summer-training.png",
+      image: cppCert,
       credentialId: "CP-20250607-2CPP-201",
       skills: ["C++", "OOPs", "Data Structures", "Algorithms"],
       duration: "35+ Hours",
@@ -26,7 +33,7 @@ const Certifications = () => {
       issuer: "Amazon Web Services",
       date: "2024",
       link: "#",
-      image: "/src/assets/certificates/aws-cloud-foundations.png",
+      image: awsCert,
       credentialId: "AWS-CF-2024-12345",
       skills: ["Cloud Computing", "AWS Services", "Cloud Architecture"]
     },
@@ -35,7 +42,7 @@ const Certifications = () => {
       issuer: "Oracle University",
       date: "2024",
       link: "#",
-      image: "/src/assets/certificates/oracle-cloud.png",
+      image: oracleCert,
       credentialId: "OCI-2024-67890",
       skills: ["OCI", "Cloud Infrastructure", "Oracle Cloud"]
     },
@@ -44,7 +51,7 @@ const Certifications = () => {
       issuer: "NPTEL",
       date: "2023",
       link: "#",
-      image: "/src/assets/certificates/advanced-computer-networks.png",
+      image: nptelCert,
       credentialId: "NPTEL-CN-2023-45678",
       skills: ["Network Protocols", "TCP/IP", "Network Security"]
     },
@@ -53,7 +60,7 @@ const Certifications = () => {
       issuer: "HackerRank",
       date: "2024",
       link: "#",
-      image: "/src/assets/certificates/sql-advanced.png",
+      image: sqlCert,
       credentialId: "HR-SQL-ADV-2024-98765",
       skills: ["Complex Queries", "Database Optimization", "PL/SQL"]
     },
@@ -62,7 +69,7 @@ const Certifications = () => {
       issuer: "LPU",
       date: "2024",
       link: "#",
-      image: "/src/assets/certificates/SYMPOSIUM.png",
+      image: symposiumCert,
       credentialId: "SYM-2024-12345",
       skills: ["Technical Symposium", "Networking", "Innovation"]
     }
@@ -101,7 +108,7 @@ const Certifications = () => {
                     alt={cert.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     onError={(e) => {
-                      console.log(`Failed to load image: ${cert.image}`);
+                      console.log(`Failed to load image: ${cert.name}`);
                       e.currentTarget.src = "https://placehold.co/400x300/1e2639/3b82f6?text=Certificate";
                     }}
                   />
