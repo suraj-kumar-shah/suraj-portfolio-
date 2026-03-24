@@ -5,8 +5,11 @@ import {
   Download, Code, Sparkles, ChevronRight, Terminal,
   Cloud, Cpu, GitBranch, ArrowDown
 } from 'lucide-react'
-// Use placeholder if image doesn't exist, or import your actual image
-const profileImage = "https://placehold.co/400x400/1e293b/22c55e?text=Suraj+Kumar+Sah"
+
+// Method 1: Using URL constructor (no TypeScript issues)
+const profileImage = new URL('../assets/projects/profile.jpeg', import.meta.url).href
+
+// Rest of your code remains the same...
 
 /* ═══════════════════════════════════════════
    TYPEWRITER HOOK
