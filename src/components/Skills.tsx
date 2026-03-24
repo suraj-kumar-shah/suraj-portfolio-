@@ -375,15 +375,15 @@ const StrengthCard3D: React.FC<{ strength: any; index: number; inView: boolean }
       onMouseLeave={() => { mx.set(0); my.set(0); setHov(false) }}
       whileHover={{ z: 20 }}
       className="relative cursor-default overflow-hidden"
-      style={{
-        background: 'linear-gradient(135deg, rgba(20,60,20,0.9) 0%, rgba(10,30,10,0.95) 100%)',
-        border: `1px solid ${hov ? strength.accent + '50' : 'rgba(34,197,94,0.15)'}`,
-        borderRadius: 20,
-        padding: '24px 20px',
-        textAlign: 'center',
-        transition: 'border-color 0.3s',
-        boxShadow: hov ? `0 20px 60px rgba(0,0,0,0.5), 0 0 30px ${strength.accent}20` : '0 8px 32px rgba(0,0,0,0.3)',
-      }}
+      // style={{
+      //   background: 'linear-gradient(135deg, rgba(20,60,20,0.9) 0%, rgba(10,30,10,0.95) 100%)',
+      //   border: `1px solid ${hov ? strength.accent + '50' : 'rgba(34,197,94,0.15)'}`,
+      //   borderRadius: 20,
+      //   padding: '24px 20px',
+      //   textAlign: 'center',
+      //   transition: 'border-color 0.3s',
+      //   boxShadow: hov ? `0 20px 60px rgba(0,0,0,0.5), 0 0 30px ${strength.accent}20` : '0 8px 32px rgba(0,0,0,0.3)',
+      // }}
     >
       <motion.div
         className="absolute inset-0 pointer-events-none rounded-[20px]"
@@ -605,8 +605,8 @@ const Skills: React.FC = () => {
               border: '1px solid rgba(34,197,94,0.28)',
               boxShadow: '0 0 30px rgba(34,197,94,0.2)',
             }}
-            animate={{ boxShadow: ['0 0 30px rgba(34,197,94,0.2)', '0 0 50px rgba(34,197,94,0.38)', '0 0 30px rgba(34,197,94,0.2)'] }}
-            transition={{ duration: 3, repeat: Infinity }}
+            // animate={{ boxShadow: ['0 0 30px rgba(34,197,94,0.2)', '0 0 50px rgba(34,197,94,0.38)', '0 0 30px rgba(34,197,94,0.2)'] }}
+            // transition={{ duration: 3, repeat: Infinity }}
           >
             <motion.div animate={{ rotate: 360 }} transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}>
               <Sparkles size={15} style={{ color: '#4ade80' }} />
