@@ -8,13 +8,6 @@ import {
   Layers, GitBranch, Terminal, Database, Shield, Users
 } from 'lucide-react'
 
-// ... keep all your existing component code (useCounter, ParticleField, StatCard, etc.)
-// Just remove the parallaxY variable at the bottom where it's declared but not used
-
-// In the About component, remove these lines:
-// const parallaxY = useTransform(scrollYProgress, [0, 1], ['0%', '-15%'])
-// and remove useSpring import
-
 /* ─────────────────────────────────────────
    Animated Counter Hook
 ───────────────────────────────────────── */
@@ -39,14 +32,14 @@ const useCounter = (target: number, duration = 2000, start = false) => {
    Particle Field Background
 ───────────────────────────────────────── */
 const ParticleField = () => {
-  const particles = Array.from({ length: 40 }, (_, i) => ({
+  const particles = Array.from({ length: 60 }, (_, i) => ({
     id: i,
     x: Math.random() * 100,
     y: Math.random() * 100,
-    size: Math.random() * 2 + 0.5,
-    duration: Math.random() * 10 + 8,
+    size: Math.random() * 2.5 + 0.5,
+    duration: Math.random() * 12 + 6,
     delay: Math.random() * 5,
-    opacity: Math.random() * 0.4 + 0.1,
+    opacity: Math.random() * 0.5 + 0.1,
   }))
 
   return (
@@ -54,7 +47,7 @@ const ParticleField = () => {
       {particles.map(p => (
         <motion.div
           key={p.id}
-          className="absolute rounded-full bg-primary-400"
+          className="absolute rounded-full bg-gradient-to-r from-cyan-400 to-cyan-600"
           style={{
             left: `${p.x}%`,
             top: `${p.y}%`,
@@ -63,10 +56,10 @@ const ParticleField = () => {
             opacity: p.opacity,
           }}
           animate={{
-            y: [0, -60, 0],
-            x: [0, Math.random() * 30 - 15, 0],
-            opacity: [p.opacity, p.opacity * 2, p.opacity],
-            scale: [1, 1.5, 1],
+            y: [0, -80, 0],
+            x: [0, Math.random() * 40 - 20, 0],
+            opacity: [p.opacity, p.opacity * 2.5, p.opacity],
+            scale: [1, 1.8, 1],
           }}
           transition={{
             duration: p.duration,
@@ -81,6 +74,46 @@ const ParticleField = () => {
 }
 
 /* ─────────────────────────────────────────
+   Floating Orbs
+───────────────────────────────────────── */
+const FloatingOrbs = () => {
+  const orbs = [
+    { color: 'from-cyan-500/20 to-blue-500/10', size: 300, top: '-10%', left: '-5%', delay: 0 },
+    { color: 'from-purple-500/20 to-pink-500/10', size: 250, bottom: '-10%', right: '-5%', delay: 2 },
+    { color: 'from-emerald-500/20 to-teal-500/10', size: 200, top: '40%', right: '10%', delay: 4 },
+  ]
+
+  return (
+    <>
+      {orbs.map((orb, i) => (
+        <motion.div
+          key={i}
+          className={`absolute rounded-full bg-gradient-to-r ${orb.color} blur-3xl`}
+          style={{
+            width: orb.size,
+            height: orb.size,
+            top: orb.top,
+            left: orb.left,
+            bottom: orb.bottom,
+            right: orb.right,
+          }}
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.6, 0.3],
+          }}
+          transition={{
+            duration: 8,
+            delay: orb.delay,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+    </>
+  )
+}
+
+/* ─────────────────────────────────────────
    Stat Card with Counter
 ───────────────────────────────────────── */
 const StatCard = ({ stat, inView }: { stat: any; inView: boolean }) => {
@@ -89,28 +122,23 @@ const StatCard = ({ stat, inView }: { stat: any; inView: boolean }) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40, scale: 0.85 }}
+      initial={{ opacity: 0, y: 50, scale: 0.9 }}
       animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
-      transition={{ duration: 0.7, delay: stat.delay, type: 'spring', stiffness: 100 }}
-      whileHover={{ scale: 1.08, y: -8, rotateY: 5 }}
+      transition={{ duration: 0.6, delay: stat.delay, type: 'spring', stiffness: 120 }}
+      whileHover={{ scale: 1.08, y: -8 }}
       className="relative group cursor-pointer"
-      style={{ perspective: 800 }}
     >
-      {/* Glow ring */}
-      <div className={`absolute -inset-0.5 bg-gradient-to-br ${stat.glow} rounded-2xl opacity-0 group-hover:opacity-60 blur-sm transition-all duration-500`} />
-
-      <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${stat.color} border border-white/5 p-6 text-center backdrop-blur-sm`}>
-        {/* Shimmer sweep */}
-        <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/8 to-transparent skew-x-12" />
-
-        {/* Icon halo */}
+      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-violet-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      
+      <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${stat.color} border border-white/10 p-6 text-center backdrop-blur-sm shadow-xl`}>
+        <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        
         <div className="relative mx-auto mb-3 w-14 h-14 flex items-center justify-center">
-          <div className={`absolute inset-0 rounded-full bg-gradient-to-br ${stat.iconBg} opacity-40 group-hover:scale-125 transition-transform duration-500`} />
-          <stat.icon className="relative text-primary-300 group-hover:scale-110 transition-transform duration-300 drop-shadow-lg" size={28} />
+          <div className={`absolute inset-0 rounded-full bg-gradient-to-br ${stat.iconBg} opacity-60 group-hover:scale-125 transition-transform duration-500`} />
+          <stat.icon className="relative text-white group-hover:scale-110 transition-transform duration-300 drop-shadow-lg" size={28} />
         </div>
 
-        {/* Value */}
-        <p className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-primary-300 leading-none mb-1 tracking-tight">
+        <p className="text-4xl font-black text-white leading-none mb-1 tracking-tight">
           {isNumeric
             ? stat.suffix
               ? `${count}${stat.suffix}`
@@ -119,9 +147,8 @@ const StatCard = ({ stat, inView }: { stat: any; inView: boolean }) => {
               : count
             : stat.displayValue}
         </p>
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-500">{stat.label}</p>
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400">{stat.label}</p>
 
-        {/* Bottom accent bar */}
         <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r ${stat.accent} scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left`} />
       </div>
     </motion.div>
@@ -154,62 +181,82 @@ const TypewriterText = ({ words }: { words: string[] }) => {
   }, [displayed, deleting, currentWord, words])
 
   return (
-    <span className="text-primary-400 font-bold">
+    <span className="text-cyan-400 font-bold">
       {displayed}
-      <span className="animate-blink border-r-2 border-primary-400 ml-0.5" />
+      <span className="animate-blink border-r-2 border-cyan-400 ml-0.5" />
     </span>
   )
 }
 
 /* ─────────────────────────────────────────
-   Skill Orb
+   Expertise Card
 ───────────────────────────────────────── */
-const SkillOrb = ({ exp, index, inView }: { exp: any; index: number; inView: boolean }) => (
+const ExpertiseCard = ({ exp, index, inView }: { exp: any; index: number; inView: boolean }) => (
   <motion.div
-    initial={{ opacity: 0, scale: 0, rotate: -20 }}
-    animate={inView ? { opacity: 1, scale: 1, rotate: 0 } : {}}
-    transition={{ duration: 0.5, delay: 0.5 + index * 0.12, type: 'spring', stiffness: 150 }}
-    whileHover={{ scale: 1.06, rotateZ: 2 }}
-    className="group relative p-4 rounded-xl border border-white/8 bg-white/3 hover:bg-white/6 hover:border-primary-500/40 transition-all duration-300 cursor-pointer overflow-hidden"
+    initial={{ opacity: 0, scale: 0.8, y: 30 }}
+    animate={inView ? { opacity: 1, scale: 1, y: 0 } : {}}
+    transition={{ duration: 0.5, delay: 0.5 + index * 0.1, type: 'spring', stiffness: 150 }}
+    whileHover={{ scale: 1.05, y: -5 }}
+    className="group relative p-4 rounded-xl bg-gradient-to-br from-white/5 to-white/3 border border-white/10 hover:border-cyan-500/40 transition-all duration-300 cursor-pointer overflow-hidden"
   >
     <div className={`absolute inset-0 bg-gradient-to-br ${exp.color} opacity-0 group-hover:opacity-100 transition-opacity duration-400`} />
     <div className="relative flex items-center gap-3 mb-2">
-      <div className="p-2 rounded-lg bg-primary-500/10 group-hover:bg-primary-500/20 transition-colors">
-        <exp.icon className="text-primary-400 group-hover:scale-110 transition-transform" size={17} />
+      <div className="p-2 rounded-lg bg-cyan-500/10 group-hover:bg-cyan-500/20 transition-colors">
+        <exp.icon className="text-cyan-400 group-hover:scale-110 transition-transform" size={18} />
       </div>
       <span className="text-sm font-semibold text-gray-200 group-hover:text-white transition-colors">{exp.name}</span>
     </div>
     <span className={`relative text-[11px] font-bold px-2.5 py-1 rounded-full border ${getLevelBadge(exp.level)}`}>
       {exp.level}
     </span>
-
-    {/* Corner accent */}
-    <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-primary-500/40 group-hover:bg-primary-400 transition-colors" />
+    <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-cyan-500/40 group-hover:bg-cyan-400 transition-colors" />
   </motion.div>
 )
 
 const getLevelBadge = (level: string) => {
   switch (level) {
-    case 'Expert': return 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25'
-    case 'Advanced': return 'bg-sky-500/15 text-sky-400 border-sky-500/25'
-    case 'Intermediate': return 'bg-amber-500/15 text-amber-400 border-amber-500/25'
-    default: return 'bg-gray-500/15 text-gray-400 border-gray-500/25'
+    case 'Expert': return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+    case 'Advanced': return 'bg-sky-500/20 text-sky-400 border-sky-500/30'
+    case 'Intermediate': return 'bg-amber-500/20 text-amber-400 border-amber-500/30'
+    default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
   }
 }
+
+/* ─────────────────────────────────────────
+   Interest Card
+───────────────────────────────────────── */
+const InterestCard = ({ interest, index, inView }: { interest: any; index: number; inView: boolean }) => (
+  <motion.div
+    initial={{ opacity: 0, x: -30 }}
+    animate={inView ? { opacity: 1, x: 0 } : {}}
+    transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
+    whileHover={{ scale: 1.03, x: 5 }}
+    className={`group relative flex items-start gap-3 p-4 rounded-xl bg-gradient-to-br ${interest.color} border border-white/10 hover:border-cyan-500/30 transition-all cursor-pointer overflow-hidden`}
+  >
+    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-white/5 to-transparent" />
+    <div className="relative p-2 rounded-lg bg-white/5 group-hover:bg-cyan-500/15 transition-colors">
+      <interest.icon className="text-cyan-400 group-hover:scale-110 transition-transform" size={20} />
+    </div>
+    <div className="relative">
+      <h4 className="font-bold text-gray-200 text-sm group-hover:text-white transition-colors">{interest.name}</h4>
+      <p className="text-[11px] text-gray-500 mt-0.5 font-medium">{interest.description}</p>
+    </div>
+    <div className="absolute top-2 right-2 w-1 h-1 rounded-full bg-cyan-500/30 group-hover:bg-cyan-400 transition-colors" />
+  </motion.div>
+)
 
 /* ─────────────────────────────────────────
    Main About Component
 ───────────────────────────────────────── */
 const About = () => {
-  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.06 })
+  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 })
   const sectionRef = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] })
-  // const parallaxY = useTransform(scrollYProgress, [0, 1], ['0%', '-15%'])
 
   const stats = [
     {
       icon: GraduationCap, label: 'Academic Year', displayValue: '3rd Year', numericValue: '3',
-      color: 'from-sky-950/80 to-blue-950/60',
+      color: 'from-sky-900/80 to-blue-900/80',
       glow: 'from-sky-500 to-blue-500',
       iconBg: 'from-sky-400 to-blue-600',
       accent: 'from-sky-500 to-blue-500',
@@ -217,7 +264,7 @@ const About = () => {
     },
     {
       icon: Award, label: 'CGPA', displayValue: '7.80', numericValue: '7.80', suffix: '',
-      color: 'from-violet-950/80 to-purple-950/60',
+      color: 'from-violet-900/80 to-purple-900/80',
       glow: 'from-violet-500 to-purple-500',
       iconBg: 'from-violet-400 to-purple-600',
       accent: 'from-violet-500 to-purple-500',
@@ -225,7 +272,7 @@ const About = () => {
     },
     {
       icon: Code, label: 'Projects Built', displayValue: '8+', numericValue: '8', suffix: '+',
-      color: 'from-emerald-950/80 to-green-950/60',
+      color: 'from-emerald-900/80 to-green-900/80',
       glow: 'from-emerald-500 to-green-500',
       iconBg: 'from-emerald-400 to-green-600',
       accent: 'from-emerald-500 to-green-500',
@@ -233,7 +280,7 @@ const About = () => {
     },
     {
       icon: Cloud, label: 'Certifications', displayValue: '6+', numericValue: '6', suffix: '+',
-      color: 'from-orange-950/80 to-rose-950/60',
+      color: 'from-orange-900/80 to-rose-900/80',
       glow: 'from-orange-500 to-rose-500',
       iconBg: 'from-orange-400 to-rose-600',
       accent: 'from-orange-500 to-rose-500',
@@ -249,10 +296,10 @@ const About = () => {
   ]
 
   const expertise = [
-    { icon: Shield, name: 'Cloud Security', level: 'Advanced', color: 'from-sky-500/8 to-blue-500/4' },
-    { icon: Database, name: 'Database Design', level: 'Expert', color: 'from-violet-500/8 to-purple-500/4' },
-    { icon: Terminal, name: 'Shell Scripting', level: 'Advanced', color: 'from-emerald-500/8 to-green-500/4' },
-    { icon: Layers, name: 'Microservices', level: 'Intermediate', color: 'from-orange-500/8 to-rose-500/4' },
+    { icon: Shield, name: 'Cloud Security', level: 'Advanced', color: 'from-sky-500/10 to-blue-500/5' },
+    { icon: Database, name: 'Database Design', level: 'Expert', color: 'from-violet-500/10 to-purple-500/5' },
+    { icon: Terminal, name: 'Shell Scripting', level: 'Advanced', color: 'from-emerald-500/10 to-green-500/5' },
+    { icon: Layers, name: 'Microservices', level: 'Intermediate', color: 'from-orange-500/10 to-rose-500/5' },
   ]
 
   const quickFacts = [
@@ -271,129 +318,92 @@ const About = () => {
       id="about"
       ref={sectionRef}
       className="py-28 relative overflow-hidden"
+      style={{ background: 'radial-gradient(ellipse at 50% 50%, #0a0a1a 0%, #050510 100%)' }}
     >
-      {/* ── Global styles ── */}
-      <style>{`
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-        .animate-blink { animation: blink 0.9s step-end infinite; }
-        @keyframes floatA { 0%,100%{transform:translateY(0px) rotate(0deg)} 50%{transform:translateY(-28px) rotate(4deg)} }
-        @keyframes floatB { 0%,100%{transform:translateY(0px) rotate(0deg)} 50%{transform:translateY(-18px) rotate(-3deg)} }
-        @keyframes orbPulse { 0%,100%{transform:scale(1);opacity:0.06} 50%{transform:scale(1.15);opacity:0.12} }
-        .float-a { animation: floatA 8s ease-in-out infinite; }
-        .float-b { animation: floatB 11s ease-in-out infinite; }
-        .orb-pulse { animation: orbPulse 6s ease-in-out infinite; }
-        @keyframes gradientShift {
-          0%,100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-        }
-        .animate-gradient { background-size: 200% 200%; animation: gradientShift 5s ease infinite; }
-        .glass-card {
-          background: rgba(255,255,255,0.025);
-          backdrop-filter: blur(16px);
-          border: 1px solid rgba(255,255,255,0.07);
-        }
-        .noise-overlay::before {
-          content:'';
-          position:absolute;inset:0;
-          background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-          pointer-events:none;opacity:0.4;border-radius:inherit;
-        }
-      `}</style>
-
-      {/* ── Background layers ── */}
+      {/* Background Layers */}
       <div className="absolute inset-0 pointer-events-none">
-        {/* Grid */}
-        <div className="absolute inset-0 opacity-[0.03]"
-          style={{ backgroundImage: 'linear-gradient(rgba(99,102,241,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,.5) 1px,transparent 1px)', backgroundSize: '60px 60px' }} />
-
-        {/* Orbs */}
-        <div className="absolute top-1/4 left-8 w-[500px] h-[500px] rounded-full bg-primary-600 orb-pulse blur-[120px]" />
-        <div className="absolute bottom-1/4 right-8 w-[400px] h-[400px] rounded-full bg-violet-700 orb-pulse blur-[100px]" style={{ animationDelay: '3s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full bg-sky-700 orb-pulse blur-[80px]" style={{ animationDelay: '1.5s' }} />
-
-        {/* Particles */}
+        {/* Grid Pattern */}
+        <div className="absolute inset-0 opacity-20" style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0)`,
+          backgroundSize: '40px 40px'
+        }} />
+        <FloatingOrbs />
         <ParticleField />
-
-        {/* Scanline */}
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary-500/40 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary-500/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/50" />
       </div>
 
       <div className="container mx-auto px-6 relative z-10">
 
-        {/* ── Section Header ── */}
+        {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
           className="text-center mb-20"
         >
-          {/* Pill badge */}
           <motion.div
-            initial={{ scale: 0, rotate: -10 }}
-            whileInView={{ scale: 1, rotate: 0 }}
+            initial={{ scale: 0 }}
+            whileInView={{ scale: 1 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.1, type: 'spring', stiffness: 160 }}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-primary-500/25 bg-primary-500/8 mb-6 shadow-lg shadow-primary-500/10"
+            transition={{ delay: 0.1, type: 'spring', stiffness: 180 }}
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/30 mb-6 shadow-lg shadow-cyan-500/20"
           >
-            <motion.div animate={{ rotate: [0, 20, -20, 0] }} transition={{ duration: 2.5, repeat: Infinity }}>
-              <Sparkles size={13} className="text-primary-400" />
+            <motion.div animate={{ rotate: 360 }} transition={{ duration: 3, repeat: Infinity }}>
+              <Sparkles size={13} className="text-cyan-400" />
             </motion.div>
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary-400">The Human Behind The Code</span>
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-400">The Human Behind The Code</span>
           </motion.div>
 
-          {/* Headline */}
           <h2 className="text-6xl md:text-8xl font-black tracking-tight mb-5 leading-none">
             <span className="text-white">Who</span>{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 via-violet-400 to-sky-400 animate-gradient">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-violet-400 to-cyan-400 animate-gradient">
               Am I?
             </span>
           </h2>
 
-          <p className="text-lg text-gray-400 max-w-xl mx-auto leading-relaxed font-light">
+          <p className="text-lg text-gray-400 max-w-xl mx-auto leading-relaxed">
             A relentless builder who turns bold ideas into elegant, 
-            <span className="text-gray-200 font-medium"> production-ready systems</span>.
+            <span className="text-white font-medium"> production-ready systems</span>.
           </p>
 
-          {/* Decorative divider */}
           <div className="flex items-center justify-center gap-4 mt-8">
-            <div className="h-px w-20 bg-gradient-to-r from-transparent to-primary-500/60" />
+            <div className="h-px w-20 bg-gradient-to-r from-transparent to-cyan-500/60" />
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
-              className="w-2 h-2 border border-primary-500/60 rotate-45"
+              className="w-2 h-2 border border-cyan-500/60 rotate-45"
             />
-            <div className="h-px w-20 bg-gradient-to-l from-transparent to-primary-500/60" />
+            <div className="h-px w-20 bg-gradient-to-l from-transparent to-cyan-500/60" />
           </div>
         </motion.div>
 
         <div ref={ref}>
-          {/* ── Stats Grid ── */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto mb-20">
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-5 max-w-5xl mx-auto mb-20">
             {stats.map(stat => <StatCard key={stat.label} stat={stat} inView={inView} />)}
           </div>
 
-          {/* ── Two-column layout ── */}
+          {/* Two-column layout */}
           <div className="grid lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
 
-            {/* ── LEFT column ── */}
+            {/* LEFT column */}
             <motion.div
-              initial={{ opacity: 0, x: -40 }}
+              initial={{ opacity: 0, x: -50 }}
               animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.8, delay: 0.3 }}
               className="space-y-6"
             >
               {/* Career Objective */}
-              <div className="glass-card noise-overlay relative rounded-3xl p-8 hover:border-primary-500/20 transition-all duration-500 group overflow-hidden">
-                <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-primary-500/5 group-hover:bg-primary-500/10 transition-colors float-a" />
+              <div className="relative rounded-3xl p-8 bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-all duration-500 group overflow-hidden">
+                <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-cyan-500/5 group-hover:bg-cyan-500/10 transition-colors" />
 
                 <div className="flex items-center gap-4 mb-7">
                   <motion.div
-                    whileHover={{ rotate: 15 }}
-                    className="p-3.5 rounded-2xl bg-gradient-to-br from-primary-500/20 to-violet-500/20 border border-primary-500/20"
+                    whileHover={{ rotate: 15, scale: 1.1 }}
+                    className="p-3.5 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-violet-500/20 border border-cyan-500/30"
                   >
-                    <Target className="text-primary-400" size={26} />
+                    <Target className="text-cyan-400" size={26} />
                   </motion.div>
                   <div>
                     <h3 className="text-2xl font-bold text-white">Career Objective</h3>
@@ -401,21 +411,20 @@ const About = () => {
                   </div>
                 </div>
 
-                <p className="text-gray-300 leading-relaxed text-[15px] mb-2">
+                <p className="text-gray-300 leading-relaxed text-[15px] mb-4">
                   I'm on a mission to secure a transformative role as a{' '}
                   <TypewriterText words={roles} />{' '}
                   within a forward-thinking organization — where I can architect cloud-native solutions, 
                   craft robust backend systems, and turn first-principles thinking into scalable, 
-                  <span className="text-primary-400 font-medium"> deeply impactful technology</span>.
+                  <span className="text-cyan-400 font-medium"> deeply impactful technology</span>.
                 </p>
 
-                <p className="text-gray-400 leading-relaxed text-sm mt-4">
+                <p className="text-gray-400 leading-relaxed text-sm">
                   My goal isn't just to write code — it's to build systems that <em>outlive trends</em> and teams that grow stronger around them.
                 </p>
 
-                {/* Quote box */}
-                <div className="relative mt-6 p-5 rounded-2xl bg-gradient-to-br from-primary-500/6 to-violet-500/4 border border-primary-500/12">
-                  <Quote size={18} className="text-primary-400/50 absolute top-3 left-3" />
+                <div className="relative mt-6 p-5 rounded-2xl bg-gradient-to-br from-cyan-500/10 to-violet-500/5 border border-cyan-500/20">
+                  <Quote size={18} className="text-cyan-400/70 absolute top-3 left-3" />
                   <p className="text-gray-400 italic pl-5 text-sm leading-relaxed">
                     "The best engineers don't just solve today's problems — they design tomorrow's possibilities."
                   </p>
@@ -423,13 +432,13 @@ const About = () => {
               </div>
 
               {/* Core Expertise */}
-              <div className="glass-card noise-overlay relative rounded-3xl p-8 hover:border-primary-500/20 transition-all duration-500 overflow-hidden">
-                <div className="absolute -bottom-6 -left-6 w-24 h-24 rounded-full bg-violet-500/5 float-b" />
+              <div className="relative rounded-3xl p-8 bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-all duration-500 overflow-hidden">
+                <div className="absolute -bottom-6 -left-6 w-24 h-24 rounded-full bg-violet-500/5" />
 
                 <div className="flex items-center gap-4 mb-6">
                   <motion.div
-                    whileHover={{ rotate: -15 }}
-                    className="p-3.5 rounded-2xl bg-gradient-to-br from-violet-500/20 to-pink-500/20 border border-violet-500/20"
+                    whileHover={{ rotate: -15, scale: 1.1 }}
+                    className="p-3.5 rounded-2xl bg-gradient-to-br from-violet-500/20 to-pink-500/20 border border-violet-500/30"
                   >
                     <Star className="text-violet-400" size={26} />
                   </motion.div>
@@ -440,25 +449,25 @@ const About = () => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  {expertise.map((exp, i) => <SkillOrb key={exp.name} exp={exp} index={i} inView={inView} />)}
+                  {expertise.map((exp, i) => <ExpertiseCard key={exp.name} exp={exp} index={i} inView={inView} />)}
                 </div>
               </div>
             </motion.div>
 
-            {/* ── RIGHT column ── */}
+            {/* RIGHT column */}
             <motion.div
-              initial={{ opacity: 0, x: 40 }}
+              initial={{ opacity: 0, x: 50 }}
               animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.8, delay: 0.4 }}
               className="space-y-6"
             >
               {/* Areas of Interest */}
-              <div className="glass-card noise-overlay relative rounded-3xl p-8 hover:border-primary-500/20 transition-all duration-500 overflow-hidden">
+              <div className="relative rounded-3xl p-8 bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-all duration-500 overflow-hidden">
                 <div className="flex items-center gap-4 mb-6">
                   <motion.div
                     animate={{ scale: [1, 1.1, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
-                    className="p-3.5 rounded-2xl bg-gradient-to-br from-rose-500/20 to-orange-500/20 border border-rose-500/20"
+                    className="p-3.5 rounded-2xl bg-gradient-to-br from-rose-500/20 to-orange-500/20 border border-rose-500/30"
                   >
                     <Heart className="text-rose-400" size={26} />
                   </motion.div>
@@ -469,36 +478,17 @@ const About = () => {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {interests.map((item, i) => (
-                    <motion.div
-                      key={item.name}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={inView ? { opacity: 1, y: 0 } : {}}
-                      transition={{ duration: 0.5, delay: 0.6 + i * 0.1 }}
-                      whileHover={{ scale: 1.04, y: -3 }}
-                      className={`group relative flex items-start gap-3 p-4 rounded-2xl bg-gradient-to-br ${item.color} border border-white/6 hover:border-primary-500/30 transition-all cursor-pointer overflow-hidden`}
-                    >
-                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-white/3 to-transparent" />
-                      <div className="relative p-2 rounded-xl bg-white/5 group-hover:bg-primary-500/15 transition-colors">
-                        <item.icon className="text-primary-400 group-hover:scale-110 transition-transform" size={19} />
-                      </div>
-                      <div className="relative">
-                        <h4 className="font-bold text-gray-200 text-sm group-hover:text-white transition-colors">{item.name}</h4>
-                        <p className="text-[11px] text-gray-500 mt-0.5 font-medium">{item.description}</p>
-                      </div>
-                      <div className="absolute top-2 right-2 w-1 h-1 rounded-full bg-primary-500/30 group-hover:bg-primary-400 transition-colors" />
-                    </motion.div>
-                  ))}
+                  {interests.map((item, i) => <InterestCard key={item.name} interest={item} index={i} inView={inView} />)}
                 </div>
               </div>
 
               {/* Quick Facts */}
-              <div className="glass-card noise-overlay relative rounded-3xl p-8 hover:border-primary-500/20 transition-all duration-500 overflow-hidden">
+              <div className="relative rounded-3xl p-8 bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-500/30 transition-all duration-500 overflow-hidden">
                 <div className="flex items-center gap-4 mb-6">
                   <motion.div
                     whileHover={{ rotate: 180 }}
                     transition={{ duration: 0.4 }}
-                    className="p-3.5 rounded-2xl bg-gradient-to-br from-amber-500/20 to-yellow-500/20 border border-amber-500/20"
+                    className="p-3.5 rounded-2xl bg-gradient-to-br from-amber-500/20 to-yellow-500/20 border border-amber-500/30"
                   >
                     <Zap className="text-amber-400" size={26} />
                   </motion.div>
@@ -508,22 +498,21 @@ const About = () => {
                   </div>
                 </div>
 
-                <div className="space-y-2">
+                <div className="grid grid-cols-1 gap-2">
                   {quickFacts.map((fact, i) => (
                     <motion.div
                       key={i}
-                      initial={{ opacity: 0, x: -25 }}
+                      initial={{ opacity: 0, x: -20 }}
                       animate={inView ? { opacity: 1, x: 0 } : {}}
-                      transition={{ duration: 0.45, delay: 0.7 + i * 0.06 }}
-                      whileHover={{ x: 4 }}
-                      className="group flex items-center gap-3 p-3 rounded-xl hover:bg-white/4 transition-all cursor-default"
+                      transition={{ duration: 0.4, delay: 0.7 + i * 0.06 }}
+                      whileHover={{ x: 5 }}
+                      className="group flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-all cursor-default"
                     >
-                      <div className="relative flex-shrink-0 p-1.5 rounded-lg bg-primary-500/8 group-hover:bg-primary-500/18 transition-colors">
-                        <fact.icon size={14} className="text-primary-400" />
-                        <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-primary-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="relative flex-shrink-0 p-1.5 rounded-lg bg-cyan-500/10 group-hover:bg-cyan-500/20 transition-colors">
+                        <fact.icon size={14} className="text-cyan-400" />
                       </div>
                       <span className="text-sm text-gray-400 group-hover:text-gray-200 transition-colors leading-tight">{fact.text}</span>
-                      <CheckCircle2 size={13} className="text-primary-500/0 group-hover:text-primary-500/60 transition-all ml-auto flex-shrink-0" />
+                      <CheckCircle2 size={13} className="text-cyan-500/0 group-hover:text-cyan-500/60 transition-all ml-auto" />
                     </motion.div>
                   ))}
                 </div>
@@ -531,65 +520,49 @@ const About = () => {
             </motion.div>
           </div>
 
-          {/* ── Philosophy Banner ── */}
+          {/* Philosophy Banner */}
           <motion.div
-            initial={{ opacity: 0, y: 40, scale: 0.96 }}
-            animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
-            transition={{ duration: 0.9, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0, y: 50 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.9, delay: 0.9 }}
             className="mt-20 max-w-5xl mx-auto"
           >
-            <div className="relative overflow-hidden rounded-3xl border border-primary-500/15 group cursor-default">
-              {/* Gradient bg */}
-              <div className="absolute inset-0 bg-gradient-to-r from-primary-950/80 via-violet-950/60 to-sky-950/80" />
-
-              {/* Animated mesh */}
-              <div className="absolute inset-0 opacity-20"
-                style={{ backgroundImage: 'radial-gradient(ellipse at 30% 50%, rgba(99,102,241,0.3) 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, rgba(139,92,246,0.25) 0%, transparent 60%)' }} />
-
-              {/* Shimmer on hover */}
+            <div className="relative overflow-hidden rounded-3xl border border-cyan-500/20 group cursor-default">
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-950/80 via-violet-950/60 to-sky-950/80" />
+              <div className="absolute inset-0 opacity-20" style={{
+                backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0)`,
+                backgroundSize: '40px 40px'
+              }} />
               <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
 
-              {/* Decorative circles */}
-              <div className="absolute -left-16 top-1/2 -translate-y-1/2 w-48 h-48 rounded-full border border-primary-500/10 float-a" />
-              <div className="absolute -right-16 top-1/2 -translate-y-1/2 w-48 h-48 rounded-full border border-violet-500/10 float-b" />
-
-              {/* Content */}
               <div className="relative z-10 p-12 text-center">
                 <motion.div
                   animate={{ rotate: [0, 10, -10, 0] }}
                   transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                   className="inline-block mb-5"
                 >
-                  <Quote size={36} className="text-primary-400/60 mx-auto" />
+                  <Quote size={40} className="text-cyan-400/60 mx-auto" />
                 </motion.div>
 
-                <p className="text-gray-100 text-xl md:text-2xl leading-relaxed mb-7 font-light max-w-3xl mx-auto">
+                <p className="text-white text-xl md:text-2xl leading-relaxed mb-7 font-light max-w-3xl mx-auto">
                   "I don't just write code — I craft{' '}
-                  <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-violet-400 animate-gradient">
+                  <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400 animate-gradient">
                     living systems
                   </span>
                   {' '}that solve real problems, scale under pressure, and stand the test of time."
                 </p>
 
                 <div className="flex items-center justify-center gap-4">
-                  <motion.div
-                    className="h-px w-16 bg-gradient-to-r from-transparent to-primary-500/70"
-                    animate={{ scaleX: [0, 1] }}
-                    transition={{ delay: 1.2, duration: 0.6 }}
-                  />
-                  <span className="text-primary-400 font-bold text-sm tracking-wide">— Suraj Kumar Sah</span>
-                  <motion.div
-                    className="h-px w-16 bg-gradient-to-l from-transparent to-primary-500/70"
-                    animate={{ scaleX: [0, 1] }}
-                    transition={{ delay: 1.2, duration: 0.6 }}
-                  />
+                  <div className="h-px w-16 bg-gradient-to-r from-transparent to-cyan-500/70" />
+                  <span className="text-cyan-400 font-bold text-sm tracking-wide">— Suraj Kumar Sah</span>
+                  <div className="h-px w-16 bg-gradient-to-l from-transparent to-cyan-500/70" />
                 </div>
 
-                <div className="mt-5 flex items-center justify-center gap-2 text-gray-600">
+                <div className="mt-6 flex items-center justify-center gap-3 text-gray-500">
                   {['Code.', 'Architect.', 'Innovate.', 'Impact.'].map((word, i) => (
                     <React.Fragment key={word}>
-                      <span className="text-xs font-semibold uppercase tracking-widest hover:text-primary-400 transition-colors cursor-default">{word}</span>
-                      {i < 3 && <span className="text-primary-800">·</span>}
+                      <span className="text-xs font-semibold uppercase tracking-widest hover:text-cyan-400 transition-colors cursor-default">{word}</span>
+                      {i < 3 && <span className="text-cyan-800">·</span>}
                     </React.Fragment>
                   ))}
                 </div>
@@ -598,6 +571,24 @@ const About = () => {
           </motion.div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
+        }
+        .animate-blink {
+          animation: blink 0.9s step-end infinite;
+        }
+        @keyframes gradientShift {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+        .animate-gradient {
+          background-size: 200% 200%;
+          animation: gradientShift 5s ease infinite;
+        }
+      `}</style>
     </section>
   )
 }
