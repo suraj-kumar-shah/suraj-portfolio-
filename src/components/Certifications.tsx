@@ -3,15 +3,13 @@ import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { Award, ExternalLink, Eye } from 'lucide-react'
 
-// Certificate images - using placeholder URLs to avoid path issues
-const certificateImages = {
-  cpp: "https://placehold.co/400x300/1e293b/22c55e?text=C+++Certificate",
-  aws: "https://placehold.co/400x300/1e293b/ff9900?text=AWS+Certificate",
-  oracle: "https://placehold.co/400x300/1e293b/ff0000?text=Oracle+Certificate",
-  nptel: "https://placehold.co/400x300/1e293b/3b82f6?text=NPTEL+Certificate",
-  sql: "https://placehold.co/400x300/1e293b/00aaff?text=SQL+Certificate",
-  symposium: "https://placehold.co/400x300/1e293b/a855f7?text=Symposium"
-}
+// Use require instead of import for images (works without type declarations)
+const cppCert = new URL('../assets/certificates/cpp-summer-training.png', import.meta.url).href
+const awsCert = new URL('../assets/certificates/aws-cloud-foundations.png', import.meta.url).href
+const oracleCert = new URL('../assets/certificates/oracle-cloud.png', import.meta.url).href
+const nptelCert = new URL('../assets/certificates/advanced-computer-networks.png', import.meta.url).href
+const sqlCert = new URL('../assets/certificates/sql-advanced.png', import.meta.url).href
+const symposiumCert = new URL('../assets/certificates/SYMPOSIUM.png', import.meta.url).href
 
 const Certifications: React.FC = () => {
   const [ref, inView] = useInView({
@@ -26,7 +24,7 @@ const Certifications: React.FC = () => {
       issuer: "CSE PATHSHALA",
       date: "August 2025",
       link: "#",
-      image: certificateImages.cpp,
+      image: cppCert,
       credentialId: "CP-20250607-2CPP-201",
       skills: ["C++", "OOPs", "Data Structures", "Algorithms"],
       duration: "35+ Hours",
@@ -38,7 +36,7 @@ const Certifications: React.FC = () => {
       issuer: "Amazon Web Services",
       date: "2024",
       link: "#",
-      image: certificateImages.aws,
+      image: awsCert,
       credentialId: "AWS-CF-2024-12345",
       skills: ["Cloud Computing", "AWS Services", "Cloud Architecture"]
     },
@@ -48,7 +46,7 @@ const Certifications: React.FC = () => {
       issuer: "Oracle University",
       date: "2024",
       link: "#",
-      image: certificateImages.oracle,
+      image: oracleCert,
       credentialId: "OCI-2024-67890",
       skills: ["OCI", "Cloud Infrastructure", "Oracle Cloud"]
     },
@@ -58,7 +56,7 @@ const Certifications: React.FC = () => {
       issuer: "NPTEL",
       date: "2023",
       link: "#",
-      image: certificateImages.nptel,
+      image: nptelCert,
       credentialId: "NPTEL-CN-2023-45678",
       skills: ["Network Protocols", "TCP/IP", "Network Security"]
     },
@@ -68,7 +66,7 @@ const Certifications: React.FC = () => {
       issuer: "HackerRank",
       date: "2024",
       link: "#",
-      image: certificateImages.sql,
+      image: sqlCert,
       credentialId: "HR-SQL-ADV-2024-98765",
       skills: ["Complex Queries", "Database Optimization", "PL/SQL"]
     },
@@ -78,7 +76,7 @@ const Certifications: React.FC = () => {
       issuer: "LPU",
       date: "2024",
       link: "#",
-      image: certificateImages.symposium,
+      image: symposiumCert,
       credentialId: "SYM-2024-12345",
       skills: ["Technical Symposium", "Networking", "Innovation"]
     }
