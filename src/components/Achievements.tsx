@@ -9,10 +9,7 @@ import {
   Rocket, Target, Zap, ArrowRight, ExternalLink, Globe
 } from 'lucide-react'
 
-/* ─────────────────────────────────────────────
-   FIX #9 — Inject Syne font (was never imported)
-   FIX #5 — Define animate-gradient keyframes (was missing, gradient never animated)
-───────────────────────────────────────────── */
+
 const GlobalStyles = () => (
   <style>{`
     @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800;900&display=swap');
@@ -314,7 +311,7 @@ const Achievements: React.FC = () => {
                 {/* FIX #5 — animate-gradient now works via GlobalStyles keyframe */}
                 <span className="text-transparent bg-clip-text animate-gradient"
                   style={{ backgroundImage: 'linear-gradient(135deg,#f472b6,#a78bfa,#22d3ee)' }}>
-                  Shaadi Tree
+                  shaaditree.com
                 </span>
               </h2>
 

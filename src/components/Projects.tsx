@@ -1,10 +1,11 @@
-import React, { useRef, useState, useCallback } from 'react'
-import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion'
+import React, { useRef, useState } from 'react'
+import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import {
   Github, ExternalLink, Brain, Home, GraduationCap,
   Users, Shield, BarChart3, Sparkles, Star, Zap,
-  ChevronRight, ArrowUpRight, Code2, Layers
+  ChevronRight, ArrowUpRight, Code2, Layers, Globe,
+  Smartphone, MessageCircle, Calculator, TrendingUp
 } from 'lucide-react'
 
 /* ─────────────────────────────────────────────
@@ -13,100 +14,89 @@ import {
 const PROJECTS = [
   {
     id: 0,
-    title: 'Google Play Store Insights',
-    subtitle: 'ML Prediction Engine',
-    description: 'Engineered a predictive framework analyzing app success factors. Random Forest algorithms achieved 94% accuracy in performance forecasting across 2M+ data points.',
-    icon: Brain,
-    image: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=800&h=500&fit=crop',
-    tech: ['Python', 'Random Forest', 'Scikit-learn', 'Pandas'],
-    github: 'https://github.com/suraj-kumar-shah',
-    live: '#',
-    badge: '94% Accuracy',
-    badgeColor: '#34d399',
-    accent: '#a78bfa',
-    accentAlt: '#f472b6',
-    tag: 'Machine Learning',
+    title: 'ShaadiTree.com',
+    subtitle: 'Complete Wedding Management Platform',
+    description: 'A comprehensive wedding management platform offering 20+ curated menus per city across 11+ services. Features include location-based filtering, cart system, cost estimation, and seamless vendor booking.',
+    icon: Globe,
+    image: '/src/assets/projects/shaaditree.png',
+    tech: ['React', 'Node.js', 'MongoDB', 'Tailwind CSS', 'Payment Gateway'],
+    github: 'https://github.com/suraj-kumar-shah/shaaditree',
+    live: 'https://shaaditree.com',
+    badge: '20+ Services',
+    badgeColor: '#f472b6',
+    accent: '#f472b6',
+    accentAlt: '#a78bfa',
+    tag: 'Web App',
+    features: ['11+ Services', 'City-wise Filtering', 'Cart System', 'Cost Estimation']
   },
   {
     id: 1,
-    title: 'Real Estate AI Chatbot',
-    subtitle: 'NLP Analytics Platform',
-    description: 'AI-driven conversational agent providing real-time market insights and property valuation trends through advanced natural language processing and semantic search.',
-    icon: Home,
-    image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=500&fit=crop',
-    tech: ['Python', 'Dialogflow', 'NLP', 'FastAPI'],
-    github: 'https://github.com/suraj-kumar-shah',
+    title: 'ShaadiTree Android App',
+    subtitle: 'Mobile Wedding Planning',
+    description: 'Android mobile app for wedding planning with features like vendor discovery, booking management, rewards system, and milestone tracking. Includes login/signup, profile management, and real-time notifications.',
+    icon: Smartphone,
+    image: '/src/assets/projects/shaaditree-main.jpeg',
+    tech: ['Kotlin', 'Android Studio', 'Firebase', 'REST API'],
+    github: 'https://github.com/suraj-kumar-shah/shaaditree-android',
     live: '#',
-    badge: 'AI Powered',
-    badgeColor: '#22d3ee',
-    accent: '#22d3ee',
-    accentAlt: '#818cf8',
-    tag: 'Artificial Intelligence',
+    badge: 'Android App',
+    badgeColor: '#34d399',
+    accent: '#34d399',
+    accentAlt: '#22d3ee',
+    tag: 'Mobile App',
+    features: ['Vendor Search', 'Booking Management', 'Rewards System', 'Milestone Tracking']
   },
   {
     id: 2,
-    title: 'Padhega – EdTech Platform',
-    subtitle: 'Full Stack Education App',
-    description: 'Student-centric educational platform with interactive learning modules, real-time analytics, and personalized adaptive authentication serving 5000+ active learners.',
-    icon: GraduationCap,
-    image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&h=500&fit=crop',
-    tech: ['React', 'Firebase', 'Node.js', 'MongoDB'],
-    github: 'https://github.com/suraj-kumar-shah',
+    title: 'ShaadiTree Chatbot',
+    subtitle: 'AI-Powered Wedding Assistant',
+    description: 'Intelligent chatbot that helps users plan their wedding by answering questions, providing vendor recommendations, and guiding through the planning process. Features include natural language processing and contextual responses.',
+    icon: MessageCircle,
+    image: '/src/assets/projects/shaaditree-chatbot.png',
+    tech: ['Python', 'NLP', 'Dialogflow', 'Flask', 'React'],
+    github: 'https://github.com/suraj-kumar-shah/shaaditree-chatbot',
     live: '#',
-    badge: '5000+ Users',
-    badgeColor: '#4ade80',
-    accent: '#4ade80',
-    accentAlt: '#22d3ee',
-    tag: 'Full Stack',
-  },
-  {
-    id: 3,
-    title: 'Human Action Classifier',
-    subtitle: 'Smart Home AI System',
-    description: 'Detection system for smart home environments classifying human behavior patterns with 92% precision using multivariate sensor fusion and supervised learning.',
-    icon: Users,
-    image: 'https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?w=800&h=500&fit=crop',
-    tech: ['Python', 'TensorFlow', 'Sensor Fusion', 'SVM'],
-    github: 'https://github.com/suraj-kumar-shah',
-    live: '#',
-    badge: '92% Precision',
-    badgeColor: '#fb923c',
-    accent: '#fb923c',
-    accentAlt: '#f472b6',
-    tag: 'Deep Learning',
-  },
-  {
-    id: 4,
-    title: 'Payment Fraud Detector',
-    subtitle: 'XGBoost REST API',
-    description: 'High-performance ML API using XGBoost to identify fraudulent transaction patterns in real time, reducing financial exposure by 35% for enterprise clients.',
-    icon: Shield,
-    image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&h=500&fit=crop',
-    tech: ['XGBoost', 'FastAPI', 'Docker', 'Redis'],
-    github: 'https://github.com/suraj-kumar-shah',
-    live: '#',
-    badge: '35% Risk Reduction',
-    badgeColor: '#f472b6',
-    accent: '#f472b6',
-    accentAlt: '#818cf8',
-    tag: 'FinTech · Security',
-  },
-  {
-    id: 5,
-    title: 'Unemployment Dashboard',
-    subtitle: 'Real-time Data Viz',
-    description: 'Comprehensive D3.js-powered dashboard tracking unemployment metrics and demographic trends across 50+ regions with live data pipeline and interactive filters.',
-    icon: BarChart3,
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=500&fit=crop',
-    tech: ['React', 'D3.js', 'Python', 'Tableau'],
-    github: 'https://github.com/suraj-kumar-shah',
-    live: '#',
-    badge: 'Real-time',
+    badge: 'AI Assistant',
     badgeColor: '#818cf8',
     accent: '#818cf8',
     accentAlt: '#60a5fa',
-    tag: 'Data Visualization',
+    tag: 'AI / Chatbot',
+    features: ['24/7 Support', 'Vendor Recommendations', 'Wedding Tips', 'Booking Assistance']
   },
+  {
+    id: 3,
+    title: 'StartupGuidance Pro',
+    subtitle: 'AI-Powered Startup Mentorship',
+    description: 'A modern web platform connecting entrepreneurs with expert guidance. Features include AI-powered chatbot assistant, curated mentor network, resource library, voice input capabilities, and dark/light mode.',
+    icon: TrendingUp,
+    image: '/src/assets/projects/startup-guidance.png',
+    tech: ['HTML5', 'CSS3', 'JavaScript', 'Web Speech API', 'LocalStorage'],
+    github: 'https://github.com/suraj-kumar-shah/startup-guidance-pro',
+    live: '#',
+    badge: 'AI Assistant',
+    badgeColor: '#fb923c',
+    accent: '#fb923c',
+    accentAlt: '#f472b6',
+    tag: 'Web Platform',
+    features: ['AI Chatbot', 'Expert Network', 'Resource Library', 'Voice Input']
+  },
+  {
+    id: 4,
+    title: 'Smart Calculator',
+    subtitle: 'Modern Web Calculator',
+    description: 'A feature-rich calculator with basic arithmetic operations, percentage calculations, and memory functions. Built with clean UI, responsive design, and keyboard support for seamless user experience.',
+    icon: Calculator,
+    image: '/src/assets/projects/calculator.png',
+    tech: ['HTML5', 'CSS3', 'JavaScript', 'Responsive Design'],
+    github: 'https://github.com/suraj-kumar-shah/smart-calculator',
+    live: '#',
+    badge: 'Utility Tool',
+    badgeColor: '#22d3ee',
+    accent: '#22d3ee',
+    accentAlt: '#818cf8',
+    tag: 'Tool',
+    features: ['Basic Operations', 'Percentage', 'Memory Functions', 'Keyboard Support']
+  }
 ]
 
 /* ─────────────────────────────────────────────
@@ -115,10 +105,10 @@ const PROJECTS = [
 interface CardProps { project: typeof PROJECTS[0]; index: number; inView: boolean }
 
 const ProjectCard: React.FC<CardProps> = ({ project, index, inView }) => {
-  const cardRef  = useRef<HTMLDivElement>(null)
+  const cardRef = useRef<HTMLDivElement>(null)
   const [hovered, setHovered] = useState(false)
-  const [spotX,   setSpotX]   = useState(50)
-  const [spotY,   setSpotY]   = useState(50)
+  const [spotX, setSpotX] = useState(50)
+  const [spotY, setSpotY] = useState(50)
 
   const mx = useMotionValue(0)
   const my = useMotionValue(0)
@@ -129,19 +119,20 @@ const ProjectCard: React.FC<CardProps> = ({ project, index, inView }) => {
   const shineX = useSpring(useTransform(mx, [-0.5, 0.5], [-40, 40]), spring)
   const shineY = useSpring(useTransform(my, [-0.5, 0.5], [-40, 40]), spring)
 
-  const onMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+  const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = cardRef.current!.getBoundingClientRect()
-    const nx = (e.clientX - rect.left) / rect.width  - 0.5
-    const ny = (e.clientY - rect.top)  / rect.height - 0.5
+    const nx = (e.clientX - rect.left) / rect.width - 0.5
+    const ny = (e.clientY - rect.top) / rect.height - 0.5
     mx.set(nx); my.set(ny)
-    setSpotX(((e.clientX - rect.left) / rect.width)  * 100)
-    setSpotY(((e.clientY - rect.top)  / rect.height) * 100)
-  }, [mx, my])
+    setSpotX(((e.clientX - rect.left) / rect.width) * 100)
+    setSpotY(((e.clientY - rect.top) / rect.height) * 100)
+    setHovered(true)
+  }
 
-  const onMouseLeave = useCallback(() => {
+  const onMouseLeave = () => {
     mx.set(0); my.set(0)
     setHovered(false)
-  }, [mx, my])
+  }
 
   const Icon = project.icon
 
@@ -151,18 +142,16 @@ const ProjectCard: React.FC<CardProps> = ({ project, index, inView }) => {
       animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
       transition={{ duration: 0.7, delay: index * 0.11, ease: [0.22, 1, 0.36, 1] }}
       style={{ perspective: 900 }}
-      className="relative"
     >
       <motion.div
         ref={cardRef}
         style={{ rotateX: rotX, rotateY: rotY, transformStyle: 'preserve-3d' }}
         onMouseMove={onMouseMove}
-        onMouseEnter={() => setHovered(true)}
         onMouseLeave={onMouseLeave}
         className="relative rounded-2xl overflow-hidden cursor-pointer group"
         whileHover={{ z: 30 }}
       >
-        {/* ── Glow border ── */}
+        {/* Glow border */}
         <div
           className="absolute -inset-px rounded-2xl transition-opacity duration-500 pointer-events-none"
           style={{
@@ -172,7 +161,7 @@ const ProjectCard: React.FC<CardProps> = ({ project, index, inView }) => {
           }}
         />
 
-        {/* ── Card body ── */}
+        {/* Card body */}
         <div
           className="relative rounded-2xl overflow-hidden border"
           style={{
@@ -194,13 +183,16 @@ const ProjectCard: React.FC<CardProps> = ({ project, index, inView }) => {
             }}
           />
 
-          {/* ── Image area ── */}
+          {/* Image area */}
           <div className="relative overflow-hidden h-52">
             <motion.img
               src={project.image}
               alt={project.title}
               className="w-full h-full object-cover"
               style={{ scale: hovered ? 1.08 : 1, transition: 'scale 0.6s ease' }}
+              onError={(e) => {
+                e.currentTarget.src = "https://placehold.co/800x500/1e293b/22c55e?text=" + project.title
+              }}
             />
 
             {/* Gradient overlay */}
@@ -263,9 +255,8 @@ const ProjectCard: React.FC<CardProps> = ({ project, index, inView }) => {
             </motion.div>
           </div>
 
-          {/* ── Content ── */}
+          {/* Content */}
           <div className="p-6">
-            {/* Title row */}
             <div className="flex items-start justify-between mb-2">
               <div>
                 <p
@@ -297,6 +288,26 @@ const ProjectCard: React.FC<CardProps> = ({ project, index, inView }) => {
               {project.description}
             </p>
 
+            {/* Features */}
+            <div className="flex flex-wrap gap-1.5 mb-4">
+              {project.features.map((f, i) => (
+                <motion.span
+                  key={f}
+                  initial={{ opacity: 0, scale: 0.7 }}
+                  animate={inView ? { opacity: 1, scale: 1 } : {}}
+                  transition={{ delay: index * 0.1 + i * 0.04, duration: 0.3, type: 'spring' }}
+                  className="px-2.5 py-1 rounded-full text-[10px] font-semibold"
+                  style={{
+                    background: `${project.accent}10`,
+                    border: `1px solid ${project.accent}25`,
+                    color: project.accent + 'cc',
+                  }}
+                >
+                  {f}
+                </motion.span>
+              ))}
+            </div>
+
             {/* Tech stack */}
             <div className="flex flex-wrap gap-1.5 mb-5">
               {project.tech.map((t, i) => (
@@ -306,7 +317,7 @@ const ProjectCard: React.FC<CardProps> = ({ project, index, inView }) => {
                   animate={inView ? { opacity: 1, scale: 1 } : {}}
                   transition={{ delay: index * 0.1 + i * 0.04, duration: 0.3, type: 'spring' }}
                   whileHover={{ scale: 1.1, y: -1 }}
-                  className="px-2.5 py-1 rounded-full text-[11px] font-semibold font-mono transition-all"
+                  className="px-2.5 py-1 rounded-full text-[10px] font-semibold font-mono transition-all"
                   style={{
                     background: `${project.accent}10`,
                     border: `1px solid ${project.accent}25`,
@@ -412,6 +423,12 @@ const FeaturedCard: React.FC<{ project: typeof PROJECTS[0]; inView: boolean }> =
     my.set((e.clientY - rect.top) / rect.height - 0.5)
     setSpotX(((e.clientX - rect.left) / rect.width) * 100)
     setSpotY(((e.clientY - rect.top) / rect.height) * 100)
+    setHovered(true)
+  }
+
+  const onMouseLeave = () => {
+    mx.set(0); my.set(0)
+    setHovered(false)
   }
 
   return (
@@ -426,7 +443,7 @@ const FeaturedCard: React.FC<{ project: typeof PROJECTS[0]; inView: boolean }> =
         style={{ rotateX: rotX, rotateY: rotY, transformStyle: 'preserve-3d' }}
         onMouseMove={onMouseMove}
         onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => { mx.set(0); my.set(0); setHovered(false) }}
+        onMouseLeave={onMouseLeave}
         className="relative rounded-3xl overflow-hidden cursor-pointer"
       >
         {/* Outer glow */}
@@ -465,6 +482,9 @@ const FeaturedCard: React.FC<{ project: typeof PROJECTS[0]; inView: boolean }> =
                 alt={project.title}
                 className="w-full h-full object-cover"
                 style={{ scale: hovered ? 1.06 : 1, transition: 'scale 0.7s ease' }}
+                onError={(e) => {
+                  e.currentTarget.src = "https://placehold.co/800x500/1e293b/22c55e?text=" + project.title
+                }}
               />
               <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, transparent 60%, rgba(8,12,22,0.95) 100%)' }} />
               <div className="absolute inset-0 md:hidden" style={{ background: 'linear-gradient(to bottom, transparent 60%, rgba(8,12,22,0.97) 100%)' }} />
@@ -483,7 +503,8 @@ const FeaturedCard: React.FC<{ project: typeof PROJECTS[0]; inView: boolean }> =
             {/* Content */}
             <div className="p-8 flex flex-col justify-center">
               <div className="flex items-center gap-3 mb-4">
-                <div className="section-pill" style={{ color: project.accent, borderColor: `${project.accent}30`, background: `${project.accent}08` }}>
+                <div className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider"
+                  style={{ color: project.accent, borderColor: `${project.accent}30`, background: `${project.accent}08` }}>
                   {project.tag}
                 </div>
                 <div
@@ -546,7 +567,6 @@ const SectionHeader: React.FC<{ inView: boolean }> = ({ inView }) => (
     transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
     className="text-center mb-20"
   >
-    {/* Pill */}
     <motion.div
       initial={{ scale: 0, rotate: -10 }}
       animate={inView ? { scale: 1, rotate: 0 } : {}}
@@ -560,7 +580,6 @@ const SectionHeader: React.FC<{ inView: boolean }> = ({ inView }) => (
       <span className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-400">Featured Work</span>
     </motion.div>
 
-    {/* Title */}
     <h2 className="text-6xl md:text-8xl font-black tracking-tight mb-4 leading-none" style={{ fontFamily: 'Syne,sans-serif' }}>
       <span className="text-white">My </span>
       <span className="text-transparent bg-clip-text animate-gradient"
@@ -570,11 +589,10 @@ const SectionHeader: React.FC<{ inView: boolean }> = ({ inView }) => (
     </h2>
 
     <p className="text-lg text-gray-500 max-w-lg mx-auto leading-relaxed">
-      Real-world systems I've engineered — from ML pipelines to{' '}
-      <span className="text-gray-300 font-medium">full-stack platforms</span>.
+      Real-world applications I've built — from wedding platforms to{' '}
+      <span className="text-gray-300 font-medium">AI-powered tools</span>.
     </p>
 
-    {/* Animated line */}
     <div className="flex items-center justify-center gap-3 mt-8">
       <motion.div
         initial={{ width: 0 }}
@@ -604,10 +622,10 @@ const SectionHeader: React.FC<{ inView: boolean }> = ({ inView }) => (
 ───────────────────────────────────────────── */
 const StatsBar: React.FC<{ inView: boolean }> = ({ inView }) => {
   const stats = [
-    { label: 'Projects Built', value: '6+', icon: Layers },
-    { label: 'Technologies', value: '20+', icon: Code2 },
-    { label: 'ML Accuracy', value: '94%', icon: Zap },
-    { label: 'Active Users', value: '5k+', icon: Users },
+    { label: 'Projects Built', value: '5+', icon: Layers },
+    { label: 'Technologies', value: '15+', icon: Code2 },
+    { label: 'Platforms', value: '4', icon: Globe },
+    { label: 'Happy Users', value: '1k+', icon: Users },
   ]
   return (
     <motion.div
@@ -640,10 +658,10 @@ const StatsBar: React.FC<{ inView: boolean }> = ({ inView }) => {
 ───────────────────────────────────────────── */
 const Projects: React.FC = () => {
   const [headerRef, headerInView] = useInView({ triggerOnce: true, threshold: 0.2 })
-  const [gridRef,   gridInView]   = useInView({ triggerOnce: true, threshold: 0.06 })
+  const [gridRef, gridInView] = useInView({ triggerOnce: true, threshold: 0.06 })
 
   const featured = PROJECTS[0]
-  const rest     = PROJECTS.slice(1)
+  const rest = PROJECTS.slice(1)
 
   return (
     <section id="projects" className="py-28 relative overflow-hidden">
@@ -656,13 +674,11 @@ const Projects: React.FC = () => {
       </div>
 
       <div className="container mx-auto px-6 relative z-10">
-        {/* Header */}
         <div ref={headerRef}>
           <SectionHeader inView={headerInView} />
           <StatsBar inView={headerInView} />
         </div>
 
-        {/* Projects */}
         <div ref={gridRef}>
           {/* Featured (full width) */}
           <div className="mb-6">
@@ -695,7 +711,6 @@ const Projects: React.FC = () => {
               color: '#22d3ee',
             }}
           >
-            {/* Shimmer */}
             <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/6 to-transparent skew-x-12" />
             <Sparkles size={16} />
             <span>Let's Build Something Together</span>
