@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/suraj-portfolio-/',
+  base: '/suraj-sah-portfolio/', // Your repository name
   server: {
     port: 5173,
     open: true

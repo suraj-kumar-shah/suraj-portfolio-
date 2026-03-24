@@ -3,9 +3,10 @@ import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion'
 import {
   Github, Linkedin, Award, Mail, Phone, MapPin,
   Download, Code, Sparkles, ChevronRight, Terminal,
-  Cloud, Cpu, GitBranch, Zap, ArrowDown
+  Cloud, Cpu, GitBranch, ArrowDown
 } from 'lucide-react'
-import profileImage from '../assets/profile.jpeg' // Import profile image
+// Use placeholder if image doesn't exist, or import your actual image
+const profileImage = "https://placehold.co/400x400/1e293b/22c55e?text=Suraj+Kumar+Sah"
 
 /* ═══════════════════════════════════════════
    TYPEWRITER HOOK
@@ -208,7 +209,7 @@ const ProfileImage: React.FC = () => {
         <div className="relative w-56 h-56 md:w-64 md:h-64 rounded-full overflow-hidden"
           style={{ border:'2.5px solid rgba(34,211,238,0.3)' }}>
           <img
-            src={profileImage} // Use imported image
+            src={profileImage}
             alt="Suraj Kumar Sah"
             className="w-full h-full object-cover"
             style={{ transform:`scale(${hov?1.06:1})`, transition:'transform 0.5s ease' }}

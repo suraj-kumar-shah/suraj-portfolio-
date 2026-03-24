@@ -5,11 +5,11 @@ import {
   GraduationCap, School, Calendar, MapPin, Award,
   Star, TrendingUp, Sparkles, Cloud, Server, GitBranch,
   Cpu, Code, Terminal, Database, Shield, ChevronDown,
-  Zap, CheckCircle2, ArrowRight
+  Zap
 } from 'lucide-react'
 
 /* ═══════════════════════════════════════════
-   PARTICLE CANVAS (matching App.tsx style)
+   PARTICLE CANVAS
 ═══════════════════════════════════════════ */
 const ParticleNet: React.FC = () => {
   const ref = useRef<HTMLCanvasElement>(null)
@@ -17,16 +17,17 @@ const ParticleNet: React.FC = () => {
   const mouse = useRef({ x: -999, y: -999 })
 
   useEffect(() => {
-    const c = ref.current!
+    const c = ref.current
+    if (!c) return
     const ctx = c.getContext('2d')!
-    
+
     const resize = () => {
       c.width = c.offsetWidth
       c.height = c.offsetHeight
     }
     resize()
     window.addEventListener('resize', resize)
-    
+
     const onM = (e: MouseEvent) => {
       const r = c.getBoundingClientRect()
       mouse.current = { x: e.clientX - r.left, y: e.clientY - r.top }
@@ -46,7 +47,7 @@ const ParticleNet: React.FC = () => {
     const draw = () => {
       ctx.clearRect(0, 0, c.width, c.height)
       const { x: mx, y: my } = mouse.current
-      
+
       pts.forEach(p => {
         const dx = p.x - mx, dy = p.y - my, d = Math.sqrt(dx * dx + dy * dy)
         if (d < 100) {
@@ -61,7 +62,7 @@ const ParticleNet: React.FC = () => {
         if (p.x > c.width) p.x = 0
         if (p.y < 0) p.y = c.height
         if (p.y > c.height) p.y = 0
-        
+
         ctx.beginPath()
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
         ctx.fillStyle = p.color + '70'
@@ -70,7 +71,7 @@ const ParticleNet: React.FC = () => {
         ctx.fill()
         ctx.shadowBlur = 0
       })
-      
+
       for (let i = 0; i < pts.length; i++) {
         for (let j = i + 1; j < pts.length; j++) {
           const dx = pts[i].x - pts[j].x
@@ -95,7 +96,7 @@ const ParticleNet: React.FC = () => {
       window.removeEventListener('mousemove', onM)
     }
   }, [])
-  
+
   return <canvas ref={ref} className="absolute inset-0 w-full h-full pointer-events-none" style={{ opacity: 0.6 }} />
 }
 
@@ -106,7 +107,7 @@ const Counter: React.FC<{ to: string; active: boolean }> = ({ to, active }) => {
   const [val, setVal] = useState(0)
   const num = parseFloat(to)
   const isFloat = to.includes('.')
-  
+
   useEffect(() => {
     if (!active) return
     let s = 0
@@ -122,7 +123,7 @@ const Counter: React.FC<{ to: string; active: boolean }> = ({ to, active }) => {
     }, 1000 / 60)
     return () => clearInterval(t)
   }, [active, num, isFloat])
-  
+
   return <>{val}</>
 }
 
@@ -155,7 +156,9 @@ const ExpertCard: React.FC<{ area: any; index: number; inView: boolean }> = ({ a
         ref={ref}
         style={{ rotateX: rX, rotateY: rY, transformStyle: 'preserve-3d' }}
         onMouseMove={e => {
-          const r = ref.current!.getBoundingClientRect()
+          const el = ref.current
+          if (!el) return
+          const r = el.getBoundingClientRect()
           mx.set((e.clientX - r.left) / r.width - 0.5)
           my.set((e.clientY - r.top) / r.height - 0.5)
           setSx(((e.clientX - r.left) / r.width) * 100)
@@ -164,17 +167,17 @@ const ExpertCard: React.FC<{ area: any; index: number; inView: boolean }> = ({ a
         onMouseEnter={() => setHov(true)}
         onMouseLeave={() => { mx.set(0); my.set(0); setHov(false) }}
         className="relative p-5 rounded-2xl text-center cursor-pointer overflow-hidden"
-        style={{
-          background: 'rgba(8,12,22,0.88)',
-          border: hov ? `1px solid ${color}45` : '1px solid rgba(255,255,255,0.07)',
-          backdropFilter: 'blur(16px)',
-          boxShadow: hov ? `0 24px 48px ${color}18,0 0 0 1px ${color}20` : '0 4px 24px rgba(0,0,0,0.4)',
-          transition: 'border-color 0.35s, box-shadow 0.35s',
-        }}
+        // style={{
+        //   background: 'rgba(8,12,22,0.88)',
+        //   border: hov ? `1px solid ${color}45` : '1px solid rgba(255,255,255,0.07)',
+        //   backdropFilter: 'blur(16px)',
+        //   boxShadow: hov ? `0 24px 48px ${color}18,0 0 0 1px ${color}20` : '0 4px 24px rgba(0,0,0,0.4)',
+        //   transition: 'border-color 0.35s, box-shadow 0.35s',
+        // }}
       >
         <div className="absolute inset-0 rounded-2xl pointer-events-none transition-opacity duration-300"
           style={{ opacity: hov ? 1 : 0, background: `radial-gradient(120px circle at ${sx}% ${sy}%,${color}18,transparent 70%)` }} />
-        
+
         <motion.div
           animate={hov ? { rotate: [0, -8, 8, -4, 0], scale: 1.15 } : { rotate: 0, scale: 1 }}
           transition={{ duration: 0.5 }}
@@ -201,8 +204,9 @@ const ExpertCard: React.FC<{ area: any; index: number; inView: boolean }> = ({ a
           {area.level}
         </motion.span>
 
-        <div className="absolute bottom-0 right-0 w-16 h-16 pointer-events-none transition-opacity duration-400"
-          style={{ opacity: hov ? 0.6 : 0, background: `radial-gradient(circle at 100% 100%,${color}25,transparent 70%)` }} />
+        {/* FIX: removed duplicate transition-opacity class, kept pointer-events-none */}
+        <div className="absolute bottom-0 right-0 w-16 h-16 pointer-events-none"
+          style={{ opacity: hov ? 0.6 : 0, transition: 'opacity 0.3s', background: `radial-gradient(circle at 100% 100%,${color}25,transparent 70%)` }} />
       </motion.div>
     </motion.div>
   )
@@ -286,9 +290,15 @@ const EduCard: React.FC<{ edu: any; index: number; inView: boolean }> = ({ edu, 
           <div className="absolute inset-0 rounded-[24px] pointer-events-none transition-opacity duration-300"
             style={{ opacity: hov ? 1 : 0, background: `radial-gradient(250px circle at ${sx}% ${sy}%,${edu.color}14,transparent 70%)` }} />
 
-          <motion.div className="absolute inset-0 pointer-events-none rounded-[24px]"
-            style={{ background: 'linear-gradient(110deg,transparent 35%,rgba(255,255,255,0.05) 50%,transparent 65%)', borderRadius: 24 }}
-            animate={{ x: ['-200%', '200%'] }} transition={{ duration: 4.5, repeat: Infinity, repeatDelay: 2 }}
+          {/* FIX TS17001 — was two separate style props; merged into one */}
+          <motion.div
+            className="absolute inset-0 pointer-events-none rounded-[24px]"
+            style={{
+              background: 'linear-gradient(110deg,transparent 35%,rgba(255,255,255,0.05) 50%,transparent 65%)',
+              borderRadius: 24,
+            }}
+            animate={{ x: ['-200%', '200%'] }}
+            transition={{ duration: 4.5, repeat: Infinity, repeatDelay: 2 }}
           />
 
           <div className="relative z-10 p-7">
@@ -306,7 +316,7 @@ const EduCard: React.FC<{ edu: any; index: number; inView: boolean }> = ({ edu, 
             <div className="flex gap-4 mb-5">
               <motion.div
                 whileHover={{ rotate: [0, -10, 10, 0] }} transition={{ duration: 0.5 }}
-                className="flex-shrink-0 w-13 h-13 rounded-2xl flex items-center justify-center"
+                className="flex-shrink-0 rounded-2xl flex items-center justify-center"
                 style={{ background: `${edu.color}15`, border: `1px solid ${edu.color}35`, width: 52, height: 52 }}
               >
                 <edu.icon size={26} style={{ color: edu.color }} />
@@ -391,8 +401,8 @@ const EduCard: React.FC<{ edu: any; index: number; inView: boolean }> = ({ edu, 
             </div>
           </div>
 
-          <div className="absolute bottom-0 right-0 w-24 h-24 pointer-events-none rounded-br-[24px] transition-opacity duration-400"
-            style={{ opacity: hov ? 0.7 : 0.2, background: `radial-gradient(circle at 100% 100%,${edu.color}25,transparent 70%)` }} />
+          <div className="absolute bottom-0 right-0 w-24 h-24 pointer-events-none rounded-br-[24px]"
+            style={{ opacity: hov ? 0.7 : 0.2, transition: 'opacity 0.3s', background: `radial-gradient(circle at 100% 100%,${edu.color}25,transparent 70%)` }} />
         </motion.div>
       </div>
     </motion.div>
@@ -498,10 +508,8 @@ const Education: React.FC = () => {
     <section id="education" className="relative py-28 overflow-hidden"
       style={{ background: 'linear-gradient(180deg,#020817 0%,#04101e 50%,#020817 100%)' }}>
 
-      {/* Particle net matching App.tsx */}
       <div className="absolute inset-0 pointer-events-none"><ParticleNet /></div>
 
-      {/* Ambient orbs matching space-dark theme */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {[
           { c: '#3b82f6', t: '-10%', l: '-10%', s: 600, d: 0 },
@@ -516,13 +524,11 @@ const Education: React.FC = () => {
         ))}
       </div>
 
-      {/* Grid pattern matching App.tsx */}
       <div className="absolute inset-0 opacity-[0.025]" style={{
         backgroundImage: 'linear-gradient(rgba(59,130,246,1) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,1) 1px,transparent 1px)',
         backgroundSize: '65px 65px'
       }} />
 
-      {/* Scan line animation matching App.tsx */}
       <motion.div className="absolute inset-x-0 h-px pointer-events-none"
         style={{ background: 'linear-gradient(90deg,transparent,#3b82f660,#06b6d480,#3b82f660,transparent)' }}
         animate={{ top: ['0%', '100%'] }} transition={{ duration: 9, repeat: Infinity, ease: 'linear' }}
@@ -530,7 +536,6 @@ const Education: React.FC = () => {
 
       <div className="container mx-auto px-6 relative z-10">
 
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
@@ -574,7 +579,6 @@ const Education: React.FC = () => {
           </div>
         </motion.div>
 
-        {/* Tech Banner */}
         <motion.div
           initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.7, delay: 0.1 }}
@@ -612,7 +616,6 @@ const Education: React.FC = () => {
           </div>
         </motion.div>
 
-        {/* Tabs */}
         <motion.div
           initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.15 }}
@@ -671,7 +674,6 @@ const Education: React.FC = () => {
           </AnimatePresence>
         </div>
 
-        {/* Stats */}
         <motion.div
           initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.7, delay: 0.1 }}

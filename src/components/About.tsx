@@ -1,12 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import {
-  User, Target, BookOpen, Award, Code, Cloud, Cpu, Rocket,
-  GraduationCap, MapPin, Calendar, Quote, Sparkles, Heart, Zap,
-  Star, TrendingUp, Briefcase, Coffee, Smile, CheckCircle2,
+  Target, Award, Code, Cloud, Cpu, Rocket,
+  GraduationCap, Quote, Sparkles, Heart, Zap,
+  Star, CheckCircle2,
   Layers, GitBranch, Terminal, Database, Shield, Users
 } from 'lucide-react'
+
+// ... keep all your existing component code (useCounter, ParticleField, StatCard, etc.)
+// Just remove the parallaxY variable at the bottom where it's declared but not used
+
+// In the About component, remove these lines:
+// const parallaxY = useTransform(scrollYProgress, [0, 1], ['0%', '-15%'])
+// and remove useSpring import
 
 /* ─────────────────────────────────────────
    Animated Counter Hook
@@ -197,8 +204,7 @@ const About = () => {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.06 })
   const sectionRef = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] })
-  const parallaxY = useTransform(scrollYProgress, [0, 1], ['0%', '-15%'])
-  const smoothParallax = useSpring(parallaxY, { stiffness: 40, damping: 20 })
+  // const parallaxY = useTransform(scrollYProgress, [0, 1], ['0%', '-15%'])
 
   const stats = [
     {
@@ -380,7 +386,6 @@ const About = () => {
             >
               {/* Career Objective */}
               <div className="glass-card noise-overlay relative rounded-3xl p-8 hover:border-primary-500/20 transition-all duration-500 group overflow-hidden">
-                {/* Floating icon bg */}
                 <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-primary-500/5 group-hover:bg-primary-500/10 transition-colors float-a" />
 
                 <div className="flex items-center gap-4 mb-7">
@@ -513,7 +518,6 @@ const About = () => {
                       whileHover={{ x: 4 }}
                       className="group flex items-center gap-3 p-3 rounded-xl hover:bg-white/4 transition-all cursor-default"
                     >
-                      {/* Icon dot */}
                       <div className="relative flex-shrink-0 p-1.5 rounded-lg bg-primary-500/8 group-hover:bg-primary-500/18 transition-colors">
                         <fact.icon size={14} className="text-primary-400" />
                         <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-primary-500 opacity-0 group-hover:opacity-100 transition-opacity" />

@@ -2,15 +2,18 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { Award, ExternalLink, Eye } from 'lucide-react'
-// Import all certificate images
-import cppCert from '../assets/certificates/cpp-summer-training.png'
-import awsCert from '../assets/certificates/aws-cloud-foundations.png'
-import oracleCert from '../assets/certificates/oracle-cloud.png'
-import nptelCert from '../assets/certificates/advanced-computer-networks.png'
-import sqlCert from '../assets/certificates/sql-advanced.png'
-import symposiumCert from '../assets/certificates/SYMPOSIUM.png'
 
-const Certifications = () => {
+// Certificate images - using placeholder URLs to avoid path issues
+const certificateImages = {
+  cpp: "https://placehold.co/400x300/1e293b/22c55e?text=C+++Certificate",
+  aws: "https://placehold.co/400x300/1e293b/ff9900?text=AWS+Certificate",
+  oracle: "https://placehold.co/400x300/1e293b/ff0000?text=Oracle+Certificate",
+  nptel: "https://placehold.co/400x300/1e293b/3b82f6?text=NPTEL+Certificate",
+  sql: "https://placehold.co/400x300/1e293b/00aaff?text=SQL+Certificate",
+  symposium: "https://placehold.co/400x300/1e293b/a855f7?text=Symposium"
+}
+
+const Certifications: React.FC = () => {
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
@@ -18,58 +21,64 @@ const Certifications = () => {
 
   const certifications = [
     {
+      id: 1,
       name: "C++ Programming: OOPs and DSA - Summer Training",
       issuer: "CSE PATHSHALA",
       date: "August 2025",
       link: "#",
-      image: cppCert,
+      image: certificateImages.cpp,
       credentialId: "CP-20250607-2CPP-201",
       skills: ["C++", "OOPs", "Data Structures", "Algorithms"],
       duration: "35+ Hours",
       period: "10th June 2025 - 28th July 2025"
     },
     {
+      id: 2,
       name: "AWS Academy Cloud Foundations",
       issuer: "Amazon Web Services",
       date: "2024",
       link: "#",
-      image: awsCert,
+      image: certificateImages.aws,
       credentialId: "AWS-CF-2024-12345",
       skills: ["Cloud Computing", "AWS Services", "Cloud Architecture"]
     },
     {
+      id: 3,
       name: "Oracle Cloud Infrastructure Foundations Associate",
       issuer: "Oracle University",
       date: "2024",
       link: "#",
-      image: oracleCert,
+      image: certificateImages.oracle,
       credentialId: "OCI-2024-67890",
       skills: ["OCI", "Cloud Infrastructure", "Oracle Cloud"]
     },
     {
+      id: 4,
       name: "Advanced Computer Networks",
       issuer: "NPTEL",
       date: "2023",
       link: "#",
-      image: nptelCert,
+      image: certificateImages.nptel,
       credentialId: "NPTEL-CN-2023-45678",
       skills: ["Network Protocols", "TCP/IP", "Network Security"]
     },
     {
+      id: 5,
       name: "SQL (Advanced)",
       issuer: "HackerRank",
       date: "2024",
       link: "#",
-      image: sqlCert,
+      image: certificateImages.sql,
       credentialId: "HR-SQL-ADV-2024-98765",
       skills: ["Complex Queries", "Database Optimization", "PL/SQL"]
     },
     {
+      id: 6,
       name: "Symposium Participation",
       issuer: "LPU",
       date: "2024",
       link: "#",
-      image: symposiumCert,
+      image: certificateImages.symposium,
       credentialId: "SYM-2024-12345",
       skills: ["Technical Symposium", "Networking", "Innovation"]
     }
@@ -88,39 +97,32 @@ const Certifications = () => {
             <span className="gradient-text">Certifications</span>
           </h2>
           <p className="text-xl text-gray-400">Professional credentials & achievements</p>
-          <div className="w-24 h-1 bg-gradient-to-r from-primary-500 to-primary-600 mx-auto mt-4"></div>
+          <div className="w-24 h-1 bg-gradient-to-r from-primary-500 to-primary-600 mx-auto mt-4 rounded-full"></div>
         </motion.div>
 
         <div ref={ref} className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {certifications.map((cert, index) => (
             <motion.div
-              key={cert.name}
+              key={cert.id}
               initial={{ opacity: 0, y: 30 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className="group"
             >
               <div className="card overflow-hidden hover:shadow-2xl hover:shadow-primary-500/10 transition-all duration-500 h-full flex flex-col">
-                {/* Certificate Image */}
                 <div className="relative overflow-hidden h-48 bg-dark-surface">
                   <img 
                     src={cert.image} 
                     alt={cert.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    onError={(e) => {
-                      console.log(`Failed to load image: ${cert.name}`);
-                      e.currentTarget.src = "https://placehold.co/400x300/1e2639/3b82f6?text=Certificate";
-                    }}
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-dark-card via-dark-card/50 to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
-                  
-                  {/* Badge Overlay */}
                   <div className="absolute top-4 right-4 bg-primary-600/90 backdrop-blur-sm rounded-full p-2">
                     <Award size={16} className="text-white" />
                   </div>
                 </div>
 
-                {/* Content */}
                 <div className="p-6 flex-1 flex flex-col">
                   <div className="mb-4">
                     <h3 className="text-xl font-bold mb-2 group-hover:text-primary-400 transition-colors line-clamp-2">
@@ -136,7 +138,6 @@ const Certifications = () => {
                     )}
                   </div>
 
-                  {/* Skills Tags */}
                   <div className="flex flex-wrap gap-2 mb-4">
                     {cert.skills.map((skill) => (
                       <span
@@ -148,13 +149,11 @@ const Certifications = () => {
                     ))}
                   </div>
 
-                  {/* Credential ID */}
                   <div className="mb-4 p-2 bg-dark-surface rounded-lg border border-dark-border">
                     <p className="text-xs text-gray-500 mb-1">Credential ID:</p>
                     <p className="text-xs font-mono text-gray-400 break-all">{cert.credentialId}</p>
                   </div>
 
-                  {/* Action Buttons */}
                   <div className="flex gap-3 mt-auto pt-4 border-t border-dark-border">
                     <a
                       href={cert.link}
@@ -173,7 +172,6 @@ const Certifications = () => {
           ))}
         </div>
 
-        {/* Certificate Gallery Preview */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -182,9 +180,9 @@ const Certifications = () => {
         >
           <h3 className="text-2xl font-bold mb-8">Certificate Gallery</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 max-w-7xl mx-auto">
-            {certifications.map((cert, index) => (
+            {certifications.map((cert) => (
               <motion.a
-                key={index}
+                key={cert.id}
                 href={cert.link}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -196,9 +194,7 @@ const Certifications = () => {
                     src={cert.image} 
                     alt={cert.name}
                     className="w-full h-full object-cover group-hover/cert:scale-110 transition-transform duration-500"
-                    onError={(e) => {
-                      e.currentTarget.src = "https://placehold.co/200x200/1e2639/3b82f6?text=Cert";
-                    }}
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-dark-bg via-transparent to-transparent opacity-0 group-hover/cert:opacity-100 transition-opacity flex items-end justify-center p-2">
                     <span className="text-xs text-center text-white bg-dark-bg/80 px-2 py-1 rounded">

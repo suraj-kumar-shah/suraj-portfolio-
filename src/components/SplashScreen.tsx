@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react'
-import { motion, AnimatePresence, useAnimation } from 'framer-motion'
+import React, { useEffect, useRef, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface SplashScreenProps {
   onComplete: () => void
