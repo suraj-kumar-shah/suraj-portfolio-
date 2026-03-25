@@ -8,6 +8,13 @@ import {
   Smartphone, MessageCircle, Calculator, TrendingUp
 } from 'lucide-react'
 
+// Import all project images
+import shaaditreeImg from '../assets/projects/shaaditree.png'
+import shaaditreeAppImg from '../assets/projects/shaaditree-main.jpeg'
+import shaaditreeChatbotImg from '../assets/projects/shaaditree-chatbot.png'
+import startupGuidanceImg from '../assets/projects/startup-guidance.png'
+import calculatorImg from '../assets/projects/calculator.png'
+
 /* ─────────────────────────────────────────────
    Data
 ───────────────────────────────────────────── */
@@ -18,7 +25,7 @@ const PROJECTS = [
     subtitle: 'Complete Wedding Management Platform',
     description: 'A comprehensive wedding management platform offering 20+ curated menus per city across 11+ services. Features include location-based filtering, cart system, cost estimation, and seamless vendor booking.',
     icon: Globe,
-    image: '/src/assets/projects/shaaditree.png',
+    image: shaaditreeImg,
     tech: ['React', 'Node.js', 'MongoDB', 'Tailwind CSS', 'Payment Gateway'],
     github: 'https://github.com/suraj-kumar-shah/shaaditree',
     live: 'https://shaaditree.com',
@@ -35,7 +42,7 @@ const PROJECTS = [
     subtitle: 'Mobile Wedding Planning',
     description: 'Android mobile app for wedding planning with features like vendor discovery, booking management, rewards system, and milestone tracking. Includes login/signup, profile management, and real-time notifications.',
     icon: Smartphone,
-    image: '/src/assets/projects/shaaditree-main.jpeg',
+    image: shaaditreeAppImg,
     tech: ['Kotlin', 'Android Studio', 'Firebase', 'REST API'],
     github: 'https://github.com/suraj-kumar-shah/shaaditree-android',
     live: '#',
@@ -52,7 +59,7 @@ const PROJECTS = [
     subtitle: 'AI-Powered Wedding Assistant',
     description: 'Intelligent chatbot that helps users plan their wedding by answering questions, providing vendor recommendations, and guiding through the planning process. Features include natural language processing and contextual responses.',
     icon: MessageCircle,
-    image: '/src/assets/projects/shaaditree-chatbot.png',
+    image: shaaditreeChatbotImg,
     tech: ['Python', 'NLP', 'Dialogflow', 'Flask', 'React'],
     github: 'https://github.com/suraj-kumar-shah/shaaditree-chatbot',
     live: '#',
@@ -69,7 +76,7 @@ const PROJECTS = [
     subtitle: 'AI-Powered Startup Mentorship',
     description: 'A modern web platform connecting entrepreneurs with expert guidance. Features include AI-powered chatbot assistant, curated mentor network, resource library, voice input capabilities, and dark/light mode.',
     icon: TrendingUp,
-    image: '/src/assets/projects/startup-guidance.png',
+    image: startupGuidanceImg,
     tech: ['HTML5', 'CSS3', 'JavaScript', 'Web Speech API', 'LocalStorage'],
     github: 'https://github.com/suraj-kumar-shah/startup-guidance-pro',
     live: '#',
@@ -86,7 +93,7 @@ const PROJECTS = [
     subtitle: 'Modern Web Calculator',
     description: 'A feature-rich calculator with basic arithmetic operations, percentage calculations, and memory functions. Built with clean UI, responsive design, and keyboard support for seamless user experience.',
     icon: Calculator,
-    image: '/src/assets/projects/calculator.png',
+    image: calculatorImg,
     tech: ['HTML5', 'CSS3', 'JavaScript', 'Responsive Design'],
     github: 'https://github.com/suraj-kumar-shah/smart-calculator',
     live: '#',
