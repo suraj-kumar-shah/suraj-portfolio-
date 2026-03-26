@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { 
@@ -6,13 +6,22 @@ import {
   Code, MessageCircle, Sparkles, Clock, CheckCircle, Flame, Zap, X
 } from 'lucide-react'
 
-// EmailJS configuration - For demo, using localStorage fallback
-// To enable real email sending, sign up at https://www.emailjs.com/
-const USE_EMAILJS = false // Set to true after configuring EmailJS
+// EmailJS configuration
+const EMAILJS_SERVICE_ID = 'service_8hso5fa' // Replace with your actual Service ID
+const EMAILJS_TEMPLATE_ID = 'template_7gqrb1n' // Replace with your actual Template ID
+const EMAILJS_PUBLIC_KEY = 'xJzWnYvR7tQcL3pM' // Replace with your actual Public Key
+
+declare global {
+  interface Window {
+    emailjs: any
+  }
+}
 
 const Contact: React.FC = () => {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.05 })
-  const [form, setForm] = useState({ name: '', email: '', message: '' })
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [message, setMessage] = useState('')
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
@@ -21,43 +30,67 @@ const Contact: React.FC = () => {
   const whatsappNumber = '919508465909'
   const whatsappLink = `https://wa.me/${whatsappNumber}`
 
+  // Load EmailJS script on component mount
+  useEffect(() => {
+    const script = document.createElement('script')
+    script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js'
+    script.async = true
+    script.onload = () => {
+      if (window.emailjs) {
+        window.emailjs.init(EMAILJS_PUBLIC_KEY)
+      }
+    }
+    document.body.appendChild(script)
+    return () => {
+      document.body.removeChild(script)
+    }
+  }, [])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSending(true)
     setError('')
 
     // Validate form
-    if (!form.name.trim()) {
+    if (!name.trim()) {
       setError('Please enter your name')
       setSending(false)
       return
     }
-    if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email)) {
+    if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) {
       setError('Please enter a valid email address')
       setSending(false)
       return
     }
-    if (!form.message.trim()) {
+    if (!message.trim()) {
       setError('Please enter your message')
       setSending(false)
       return
     }
 
     try {
-      // Store in localStorage (works without EmailJS)
-      const messages = JSON.parse(localStorage.getItem('contact_messages') || '[]')
-      messages.push({
-        ...form,
-        timestamp: new Date().toISOString()
-      })
-      localStorage.setItem('contact_messages', JSON.stringify(messages))
+      // Send email using EmailJS
+      const templateParams = {
+        from_name: name,
+        from_email: email,
+        message: message,
+        to_email: 'surajshah72600@gmail.com',
+        reply_to: email,
+      }
 
-      // Simulate sending delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      if (window.emailjs) {
+        await window.emailjs.send(
+          EMAILJS_SERVICE_ID,
+          EMAILJS_TEMPLATE_ID,
+          templateParams
+        )
+      }
 
       setSent(true)
       setShowSuccessPopup(true)
-      setForm({ name: '', email: '', message: '' })
+      setName('')
+      setEmail('')
+      setMessage('')
       
       setTimeout(() => {
         setSent(false)
@@ -65,7 +98,7 @@ const Contact: React.FC = () => {
       }, 2000)
     } catch (err) {
       setError('Failed to send message. Please try again or contact via WhatsApp.')
-      console.error('Message sending failed:', err)
+      console.error('Email sending failed:', err)
     } finally {
       setSending(false)
     }
@@ -87,38 +120,36 @@ const Contact: React.FC = () => {
     { href: whatsappLink, icon: MessageCircle, label: 'WhatsApp', color: '#4ade80' },
   ]
 
-  // 3D Tilt Effect Component
+  // Simple Tilt Effect
   const TiltCard = ({ children, className }: { children: React.ReactNode; className?: string }) => {
+    const [rotate, setRotate] = useState({ x: 0, y: 0 })
     const cardRef = useRef<HTMLDivElement>(null)
-    const x = useMotionValue(0)
-    const y = useMotionValue(0)
-    
-    const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [8, -8]), { stiffness: 200, damping: 22 })
-    const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-8, 8]), { stiffness: 200, damping: 22 })
-    
+
     const handleMouseMove = (e: React.MouseEvent) => {
-      const rect = cardRef.current!.getBoundingClientRect()
-      const nx = (e.clientX - rect.left) / rect.width - 0.5
-      const ny = (e.clientY - rect.top) / rect.height - 0.5
-      x.set(nx)
-      y.set(ny)
+      if (!cardRef.current) return
+      const rect = cardRef.current.getBoundingClientRect()
+      const x = (e.clientX - rect.left) / rect.width - 0.5
+      const y = (e.clientY - rect.top) / rect.height - 0.5
+      setRotate({ x: y * 6, y: x * 6 })
     }
-    
+
     const handleMouseLeave = () => {
-      x.set(0)
-      y.set(0)
+      setRotate({ x: 0, y: 0 })
     }
-    
+
     return (
-      <motion.div
+      <div
         ref={cardRef}
-        style={{ rotateX, rotateY, transformStyle: 'preserve-3d', perspective: 1000 }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         className={className}
+        style={{
+          transform: `perspective(1000px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
+          transition: 'transform 0.2s ease-out'
+        }}
       >
         {children}
-      </motion.div>
+      </div>
     )
   }
 
@@ -202,7 +233,7 @@ const Contact: React.FC = () => {
         <div ref={ref} className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8">
           
           {/* Left Column - Contact Info */}
-          <TiltCard>
+          <TiltCard className="h-full">
             <div className="p-6 rounded-2xl h-full" style={{ background: 'rgba(5,30,10,0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(34,197,94,0.15)' }}>
               <h3 className="text-xl font-bold mb-6 flex items-center gap-3" style={{ fontFamily: "'Syne', sans-serif", color: '#86efac' }}>
                 <div className="p-2 rounded-lg" style={{ background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)' }}>
@@ -213,11 +244,8 @@ const Contact: React.FC = () => {
 
               <div className="space-y-3">
                 {contacts.map((c, i) => (
-                  <motion.div
+                  <div
                     key={c.label}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={inView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ delay: 0.2 + i * 0.1 }}
                     className="flex items-center gap-4 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all duration-300 group"
                   >
                     <div className="p-2 rounded-lg bg-green-500/20 group-hover:bg-green-500/30 transition-all">
@@ -232,49 +260,40 @@ const Contact: React.FC = () => {
                       )}
                       {c.badge}
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
 
               <div className="mt-8 pt-6 border-t" style={{ borderColor: 'rgba(34,197,94,0.15)' }}>
                 <p className="text-xs font-bold uppercase tracking-wider mb-4" style={{ color: '#5a8a5a' }}>Connect With Me</p>
                 <div className="flex gap-3 flex-wrap">
-                  {socials.map((s, i) => (
-                    <motion.a
+                  {socials.map((s) => (
+                    <a
                       key={s.label}
                       href={s.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      initial={{ opacity: 0, scale: 0 }}
-                      animate={inView ? { opacity: 1, scale: 1 } : {}}
-                      transition={{ delay: 0.5 + i * 0.05 }}
-                      whileHover={{ scale: 1.1, y: -3 }}
-                      className="p-3 rounded-xl bg-white/5 hover:bg-green-500/20 transition-all duration-300 group"
+                      className="p-3 rounded-xl bg-white/5 hover:bg-green-500/20 transition-all duration-300 group hover:scale-110 inline-block"
                     >
-                      <s.icon size={18} className="group-hover:scale-110 transition-transform" style={{ color: s.color }} />
-                    </motion.a>
+                      <s.icon size={18} className="transition-transform group-hover:scale-110" style={{ color: s.color }} />
+                    </a>
                   ))}
                 </div>
               </div>
 
               {/* Availability Status */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 0.8 }}
-                className="mt-6 p-4 rounded-xl bg-green-500/10 border border-green-500/20"
-              >
+              <div className="mt-6 p-4 rounded-xl bg-green-500/10 border border-green-500/20">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
                   <p className="text-xs text-green-400 font-semibold">Available for opportunities</p>
                 </div>
                 <p className="text-xs text-gray-500 mt-2">Usually responds within 24 hours</p>
-              </motion.div>
+              </div>
             </div>
           </TiltCard>
 
           {/* Right Column - Contact Form */}
-          <TiltCard>
+          <TiltCard className="h-full">
             <div className="p-6 rounded-2xl h-full" style={{ background: 'rgba(5,30,10,0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(34,197,94,0.15)' }}>
               <h3 className="text-xl font-bold mb-6 flex items-center gap-3" style={{ fontFamily: "'Syne', sans-serif", color: '#86efac' }}>
                 <div className="p-2 rounded-lg" style={{ background: 'rgba(74,222,128,0.15)', border: '1px solid rgba(74,222,128,0.3)' }}>
@@ -284,78 +303,56 @@ const Contact: React.FC = () => {
               </h3>
 
               {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"
-                >
+                <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
                   {error}
-                </motion.div>
+                </div>
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <motion.input
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={inView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ delay: 0.3 }}
+                  <input
                     type="text"
                     placeholder="Your Name"
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     required
-                    className="px-4 py-3 rounded-xl bg-black/30 border border-green-900/30 focus:border-green-500 focus:outline-none transition-all text-gray-200 placeholder:text-gray-600"
+                    className="w-full px-4 py-3 rounded-xl bg-black/30 border border-green-900/30 focus:border-green-500 focus:outline-none transition-all text-gray-200 placeholder:text-gray-600"
                   />
-                  <motion.input
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={inView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ delay: 0.35 }}
+                  <input
                     type="email"
                     placeholder="Your Email"
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="px-4 py-3 rounded-xl bg-black/30 border border-green-900/30 focus:border-green-500 focus:outline-none transition-all text-gray-200 placeholder:text-gray-600"
+                    className="w-full px-4 py-3 rounded-xl bg-black/30 border border-green-900/30 focus:border-green-500 focus:outline-none transition-all text-gray-200 placeholder:text-gray-600"
                   />
                 </div>
 
-                <motion.textarea
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={inView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: 0.4 }}
+                <textarea
                   rows={4}
                   placeholder="Your Message"
-                  value={form.message}
-                  onChange={(e) => setForm({ ...form, message: e.target.value })}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
                   required
                   className="w-full px-4 py-3 rounded-xl bg-black/30 border border-green-900/30 focus:border-green-500 focus:outline-none transition-all text-gray-200 placeholder:text-gray-600 resize-none"
                 />
 
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={inView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: 0.45 }}
-                  className="flex gap-3 pt-2"
-                >
-                  <motion.a
+                <div className="flex gap-3 pt-2">
+                  <a
                     href={whatsappLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all"
+                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all hover:scale-105"
                     style={{ background: 'linear-gradient(135deg, #15803d, #22c55e)', boxShadow: '0 0 15px rgba(34,197,94,0.3)' }}
                   >
                     <MessageCircle size={18} />
                     <span>Chat on WhatsApp</span>
-                  </motion.a>
+                  </a>
 
-                  <motion.button
+                  <button
                     type="submit"
                     disabled={sending || sent}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105"
                     style={{
                       background: sent ? 'linear-gradient(135deg, #15803d, #22c55e)' : 'linear-gradient(135deg, #15803d, #22c55e)',
                       boxShadow: '0 0 15px rgba(34,197,94,0.3)',
@@ -364,23 +361,17 @@ const Contact: React.FC = () => {
                     {sent ? (
                       <><CheckCircle size={18} /> Sent!</>
                     ) : sending ? (
-                      <><motion.div animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity }}><Flame size={18} /></motion.div> Sending...</>
+                      <><Flame size={18} className="animate-spin" /> Sending...</>
                     ) : (
                       <><Send size={18} /> Send Message</>
                     )}
-                  </motion.button>
-                </motion.div>
+                  </button>
+                </div>
               </form>
 
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={inView ? { opacity: 1 } : {}}
-                transition={{ delay: 0.6 }}
-                className="text-center text-xs mt-5"
-                style={{ color: '#5a8a5a' }}
-              >
+              <p className="text-center text-xs mt-5" style={{ color: '#5a8a5a' }}>
                 <Mail size={12} className="inline mr-1" /> I'll get back to you within 24 hours. For urgent inquiries, use WhatsApp.
-              </motion.p>
+              </p>
             </div>
           </TiltCard>
         </div>
@@ -399,6 +390,13 @@ const Contact: React.FC = () => {
         }
         .animation-delay-4000 {
           animation-delay: 4s;
+        }
+        .animate-spin {
+          animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
       `}</style>
     </section>
