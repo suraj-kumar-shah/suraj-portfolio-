@@ -9,10 +9,6 @@ import {
 // Method 1: Using URL constructor (no TypeScript issues)
 const profileImage = new URL('../assets/projects/profile.jpeg', import.meta.url).href
 
-// Resume file - make sure to place your resume PDF in the assets folder
-// or change the path to where your resume is located
-const resumeFile = new URL('../assets/resume.pdf', import.meta.url).href
-
 /* ═══════════════════════════════════════════
    TYPEWRITER HOOK
 ═══════════════════════════════════════════ */
@@ -318,19 +314,64 @@ const ROLES = ['Cloud Engineer', 'DevOps Specialist', 'Full Stack Developer', 'S
 
 const Hero: React.FC = () => {
   const typedRole = useTypewriter(ROLES, 65, 38, 1800)
+  const [isDownloading, setIsDownloading] = useState(false)
 
-  const handleDownloadResume = () => {
+  // Get the correct resume URL based on environment
+  const getResumeUrl = () => {
+    // For GitHub Pages deployment
+    const isGitHubPages = window.location.hostname.includes('github.io')
+    
+    if (isGitHubPages) {
+      // Get repository name from URL
+      const repoName = window.location.pathname.split('/')[1]
+      return `${repoName}/resume.pdf`
+    }
+    
+    // For local development or custom domain
+    return '/resume.pdf'
+  }
+
+  const handleDownloadResume = async () => {
+    setIsDownloading(true)
+    
     try {
-      const link = document.createElement('a')
-      link.href = resumeFile
-      link.download = 'Suraj_Kumar_Sah_Resume.pdf'
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+      // Try multiple methods to ensure download works
+      const resumeUrl = getResumeUrl()
+      const baseUrl = window.location.origin
+      const fullUrl = `${baseUrl}${resumeUrl}`
+      
+      // Method 1: Try to fetch and create blob
+      const response = await fetch(fullUrl)
+      
+      if (response.ok) {
+        const blob = await response.blob()
+        const blobUrl = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = blobUrl
+        link.download = 'Suraj_Kumar_Sah_Resume.pdf'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(blobUrl)
+      } else {
+        // Method 2: Fallback to direct link
+        const link = document.createElement('a')
+        link.href = fullUrl
+        link.download = 'Suraj_Kumar_Sah_Resume.pdf'
+        link.target = '_blank'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      }
     } catch (error) {
       console.error('Error downloading resume:', error)
-      // Fallback: Open in new tab if download fails
-      window.open(resumeFile, '_blank')
+      
+      // Method 3: Last resort - open in new tab
+      const resumeUrl = getResumeUrl()
+      const fullUrl = `${window.location.origin}${resumeUrl}`
+      window.open(fullUrl, '_blank')
+    } finally {
+      setIsDownloading(false)
     }
   }
 
@@ -482,17 +523,32 @@ const Hero: React.FC = () => {
 
               <motion.button
                 onClick={handleDownloadResume}
+                disabled={isDownloading}
                 whileHover={{ scale:1.05, y:-3 }} 
                 whileTap={{ scale:0.96 }}
-                className="relative group flex items-center gap-2.5 px-6 py-3 rounded-2xl font-bold text-sm overflow-hidden cursor-pointer"
+                className="relative group flex items-center gap-2.5 px-6 py-3 rounded-2xl font-bold text-sm overflow-hidden cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ background:'linear-gradient(135deg,rgba(34,211,238,0.18),rgba(129,140,248,0.15))', border:'1px solid rgba(34,211,238,0.35)', color:'#22d3ee' }}
               >
                 <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/8 to-transparent skew-x-12" />
-                <Download size={15} className="relative group-hover:scale-110 transition-transform" />
-                <span className="relative">Download Resume</span>
-                <motion.div className="relative" animate={{ x:[0,4,0] }} transition={{ duration:1.6, repeat:Infinity }}>
-                  <ChevronRight size={14} />
-                </motion.div>
+                {isDownloading ? (
+                  <>
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    >
+                      <Download size={15} className="relative" />
+                    </motion.div>
+                    <span className="relative">Downloading...</span>
+                  </>
+                ) : (
+                  <>
+                    <Download size={15} className="relative group-hover:scale-110 transition-transform" />
+                    <span className="relative">Download Resume</span>
+                    <motion.div className="relative" animate={{ x:[0,4,0] }} transition={{ duration:1.6, repeat:Infinity }}>
+                      <ChevronRight size={14} />
+                    </motion.div>
+                  </>
+                )}
               </motion.button>
             </motion.div>
           </div>
