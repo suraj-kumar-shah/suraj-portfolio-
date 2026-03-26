@@ -316,62 +316,41 @@ const Hero: React.FC = () => {
   const typedRole = useTypewriter(ROLES, 65, 38, 1800)
   const [isDownloading, setIsDownloading] = useState(false)
 
-  // Get the correct resume URL based on environment
-  const getResumeUrl = () => {
-    // For GitHub Pages deployment
-    const isGitHubPages = window.location.hostname.includes('github.io')
-    
-    if (isGitHubPages) {
-      // Get repository name from URL
-      const repoName = window.location.pathname.split('/')[1]
-      return `${repoName}/resume.pdf`
-    }
-    
-    // For local development or custom domain
-    return '/resume.pdf'
-  }
-
+  // Google Drive file ID for resume
+  const RESUME_FILE_ID = '1Yym9bh2apPksww9pkd4pZ-musPzIwlYy'
+  
+  // Function to handle resume download via Google Drive
   const handleDownloadResume = async () => {
     setIsDownloading(true)
     
     try {
-      // Try multiple methods to ensure download works
-      const resumeUrl = getResumeUrl()
-      const baseUrl = window.location.origin
-      const fullUrl = `${baseUrl}${resumeUrl}`
+      // Create a direct download URL for Google Drive
+      const downloadUrl = `https://drive.google.com/uc?export=download&id=${RESUME_FILE_ID}`
       
-      // Method 1: Try to fetch and create blob
-      const response = await fetch(fullUrl)
+      // Try to fetch the file first to ensure it's accessible
+      const response = await fetch(downloadUrl, { method: 'HEAD' })
       
-      if (response.ok) {
-        const blob = await response.blob()
-        const blobUrl = window.URL.createObjectURL(blob)
+      if (response.ok || response.status === 302) {
+        // Create an invisible anchor element and trigger download
         const link = document.createElement('a')
-        link.href = blobUrl
-        link.download = 'Suraj_Kumar_Sah_Resume.pdf'
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        window.URL.revokeObjectURL(blobUrl)
-      } else {
-        // Method 2: Fallback to direct link
-        const link = document.createElement('a')
-        link.href = fullUrl
+        link.href = downloadUrl
         link.download = 'Suraj_Kumar_Sah_Resume.pdf'
         link.target = '_blank'
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
+      } else {
+        // Fallback: Open in new tab
+        window.open(downloadUrl, '_blank')
       }
     } catch (error) {
       console.error('Error downloading resume:', error)
-      
-      // Method 3: Last resort - open in new tab
-      const resumeUrl = getResumeUrl()
-      const fullUrl = `${window.location.origin}${resumeUrl}`
-      window.open(fullUrl, '_blank')
+      // Ultimate fallback: Open the Google Drive view link
+      const fallbackUrl = `https://drive.google.com/file/d/${RESUME_FILE_ID}/view?usp=sharing`
+      window.open(fallbackUrl, '_blank')
     } finally {
-      setIsDownloading(false)
+      // Reset downloading state after a delay
+      setTimeout(() => setIsDownloading(false), 1000)
     }
   }
 
@@ -538,7 +517,7 @@ const Hero: React.FC = () => {
                     >
                       <Download size={15} className="relative" />
                     </motion.div>
-                    <span className="relative">Downloading...</span>
+                    <span className="relative">Preparing Resume...</span>
                   </>
                 ) : (
                   <>
