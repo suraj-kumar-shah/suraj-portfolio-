@@ -1,11 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { motion, useMotionValue, useTransform, useSpring, useScroll, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import {
   GraduationCap, School, Calendar, MapPin, Award,
-  Star, TrendingUp, Sparkles, Cloud, Server, GitBranch,
-  Cpu, Code, Terminal, Database, Shield, ChevronDown,
-  Zap
+  Star, TrendingUp, Sparkles, ChevronDown, Cloud
 } from 'lucide-react'
 
 /* ═══════════════════════════════════════════
@@ -128,282 +126,105 @@ const Counter: React.FC<{ to: string; active: boolean }> = ({ to, active }) => {
 }
 
 /* ═══════════════════════════════════════════
-   3D EXPERTISE CARD
-═══════════════════════════════════════════ */
-const ExpertCard: React.FC<{ area: any; index: number; inView: boolean }> = ({ area, index, inView }) => {
-  const ref = useRef<HTMLDivElement>(null)
-  const mx = useMotionValue(0)
-  const my = useMotionValue(0)
-  const sp = { damping: 22, stiffness: 200 }
-  const rX = useSpring(useTransform(my, [-0.5, 0.5], [12, -12]), sp)
-  const rY = useSpring(useTransform(mx, [-0.5, 0.5], [-12, 12]), sp)
-  const [hov, setHov] = useState(false)
-  const [sx, setSx] = useState(50)
-  const [sy, setSy] = useState(50)
-
-  const COLORS = ['#22d3ee', '#818cf8', '#34d399', '#f472b6', '#fb923c', '#a78bfa', '#60a5fa', '#4ade80']
-  const color = COLORS[index % COLORS.length]
-  const levelColor = area.level === 'Expert' ? '#34d399' : area.level === 'Advanced' ? '#60a5fa' : '#f59e0b'
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.75, y: 40 }}
-      animate={inView ? { opacity: 1, scale: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, delay: 0.05 + index * 0.07, type: 'spring', stiffness: 110 }}
-      style={{ perspective: 700 }}
-    >
-      <motion.div
-        ref={ref}
-        style={{ rotateX: rX, rotateY: rY, transformStyle: 'preserve-3d' }}
-        onMouseMove={e => {
-          const el = ref.current
-          if (!el) return
-          const r = el.getBoundingClientRect()
-          mx.set((e.clientX - r.left) / r.width - 0.5)
-          my.set((e.clientY - r.top) / r.height - 0.5)
-          setSx(((e.clientX - r.left) / r.width) * 100)
-          setSy(((e.clientY - r.top) / r.height) * 100)
-        }}
-        onMouseEnter={() => setHov(true)}
-        onMouseLeave={() => { mx.set(0); my.set(0); setHov(false) }}
-        className="relative p-5 rounded-2xl text-center cursor-pointer overflow-hidden"
-        // style={{
-        //   background: 'rgba(8,12,22,0.88)',
-        //   border: hov ? `1px solid ${color}45` : '1px solid rgba(255,255,255,0.07)',
-        //   backdropFilter: 'blur(16px)',
-        //   boxShadow: hov ? `0 24px 48px ${color}18,0 0 0 1px ${color}20` : '0 4px 24px rgba(0,0,0,0.4)',
-        //   transition: 'border-color 0.35s, box-shadow 0.35s',
-        // }}
-      >
-        <div className="absolute inset-0 rounded-2xl pointer-events-none transition-opacity duration-300"
-          style={{ opacity: hov ? 1 : 0, background: `radial-gradient(120px circle at ${sx}% ${sy}%,${color}18,transparent 70%)` }} />
-
-        <motion.div
-          animate={hov ? { rotate: [0, -8, 8, -4, 0], scale: 1.15 } : { rotate: 0, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="mx-auto mb-3 w-11 h-11 flex items-center justify-center rounded-xl"
-          style={{ background: `${color}15`, border: `1px solid ${color}30` }}
-        >
-          <area.icon size={22} style={{ color }} />
-        </motion.div>
-
-        <p className="text-xs font-black mb-2.5 text-white leading-tight" style={{ fontFamily: 'Syne,sans-serif' }}>{area.name}</p>
-
-        <div className="flex flex-wrap gap-1 justify-center mb-3">
-          {area.skills.map((s: string) => (
-            <span key={s} className="text-[9px] px-1.5 py-0.5 rounded-full font-semibold"
-              style={{ background: `${color}0d`, color: `${color}bb`, border: `1px solid ${color}20` }}>{s}</span>
-          ))}
-        </div>
-
-        <motion.span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest"
-          style={{ color: levelColor }}
-          animate={hov ? { scale: [1, 1.08, 1] } : {}} transition={{ duration: 0.4 }}
-        >
-          <span className="w-1.5 h-1.5 rounded-full" style={{ background: levelColor }} />
-          {area.level}
-        </motion.span>
-
-        {/* FIX: removed duplicate transition-opacity class, kept pointer-events-none */}
-        <div className="absolute bottom-0 right-0 w-16 h-16 pointer-events-none"
-          style={{ opacity: hov ? 0.6 : 0, transition: 'opacity 0.3s', background: `radial-gradient(circle at 100% 100%,${color}25,transparent 70%)` }} />
-      </motion.div>
-    </motion.div>
-  )
-}
-
-/* ═══════════════════════════════════════════
-   HOLOGRAPHIC EDUCATION CARD
+   EDUCATION CARD
 ═══════════════════════════════════════════ */
 const EduCard: React.FC<{ edu: any; index: number; inView: boolean }> = ({ edu, index, inView }) => {
   const [expanded, setExpanded] = useState(false)
-  const [hov, setHov] = useState(false)
-  const [sx, setSx] = useState(50)
-  const [sy, setSy] = useState(50)
-  const isLeft = index % 2 === 0
 
   return (
     <motion.div
-      className={`relative flex mb-16 flex-col items-start ${isLeft ? 'md:flex-row' : 'md:flex-row-reverse'} md:items-center`}
-      initial={{ opacity: 0, x: isLeft ? -70 : 70, filter: 'blur(8px)' }}
-      animate={inView ? { opacity: 1, x: 0, filter: 'blur(0px)' } : {}}
-      transition={{ duration: 0.8, delay: index * 0.2, ease: [0.22, 1, 0.36, 1] }}
+      initial={{ opacity: 0, y: 50 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay: index * 0.15 }}
+      whileHover={{ y: -5 }}
+      className="mb-6 last:mb-0"
     >
-      <motion.div
-        initial={{ scale: 0, rotate: -180 }}
-        animate={inView ? { scale: 1, rotate: 0 } : {}}
-        transition={{ duration: 0.7, delay: index * 0.2 + 0.35, type: 'spring' }}
-        className="absolute left-8 md:left-1/2 md:-translate-x-1/2 z-20"
+      <div className="relative rounded-2xl overflow-hidden border border-white/10 hover:border-cyan-500/30 transition-all duration-500 group"
+        style={{
+          background: 'rgba(8,12,22,0.85)',
+          backdropFilter: 'blur(20px)',
+        }}
       >
-        <div className="relative">
-          {[1, 2].map(i => (
-            <motion.div key={i} className="absolute inset-0 rounded-full"
-              style={{ border: `2px solid ${edu.color}50` }}
-              animate={{ scale: [1, 2.2 + i * 0.5, 1], opacity: [0.6, 0, 0.6] }}
-              transition={{ duration: 2.5 + i * 0.3, repeat: Infinity, delay: i * 0.4 }}
-            />
-          ))}
-          <motion.div
-            className="w-7 h-7 rounded-full flex items-center justify-center"
-            style={{ background: `linear-gradient(135deg,${edu.color},${edu.colorAlt})`, boxShadow: `0 0 20px ${edu.color}70` }}
-            animate={{ boxShadow: [`0 0 20px ${edu.color}70`, `0 0 40px ${edu.color}a0`, `0 0 20px ${edu.color}70`] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <edu.icon size={14} className="text-white" />
-          </motion.div>
-        </div>
-      </motion.div>
-
-      <div className={`ml-20 md:ml-0 md:w-5/12 ${isLeft ? 'md:pr-14' : 'md:pl-14'}`}>
-        <motion.div
-          onMouseMove={e => {
-            const r = e.currentTarget.getBoundingClientRect()
-            setSx(((e.clientX - r.left) / r.width) * 100)
-            setSy(((e.clientY - r.top) / r.height) * 100)
-          }}
-          onMouseEnter={() => setHov(true)}
-          onMouseLeave={() => setHov(false)}
-          whileHover={{ scale: 1.02, y: -6 }}
-          className="relative overflow-hidden cursor-pointer"
-          style={{
-            background: 'rgba(6,10,20,0.90)',
-            border: hov ? `1px solid ${edu.color}45` : `1px solid ${edu.color}18`,
-            borderRadius: 24,
-            backdropFilter: 'blur(24px)',
-            boxShadow: hov ? `0 32px 64px ${edu.color}18,0 0 0 1px ${edu.color}20` : '0 8px 40px rgba(0,0,0,0.5)',
-            transition: 'all 0.45s ease',
-          }}
-        >
-          <motion.div className="absolute inset-0 rounded-[24px] pointer-events-none"
-            animate={{ background: [
-              `linear-gradient(135deg,${edu.color}30,${edu.colorAlt}15,transparent)`,
-              `linear-gradient(225deg,${edu.colorAlt}30,${edu.color}15,transparent)`,
-              `linear-gradient(315deg,${edu.color}25,${edu.colorAlt}20,transparent)`,
-              `linear-gradient(135deg,${edu.color}30,${edu.colorAlt}15,transparent)`,
-            ] }}
-            transition={{ duration: 6, repeat: Infinity }}
-          />
-
-          <div className="absolute inset-0 rounded-[24px]"
-            style={{ background: `linear-gradient(135deg,${edu.color}12 0%,${edu.colorAlt}06 100%)` }} />
-
-          <div className="absolute inset-0 rounded-[24px] pointer-events-none transition-opacity duration-300"
-            style={{ opacity: hov ? 1 : 0, background: `radial-gradient(250px circle at ${sx}% ${sy}%,${edu.color}14,transparent 70%)` }} />
-
-          {/* FIX TS17001 — was two separate style props; merged into one */}
-          <motion.div
-            className="absolute inset-0 pointer-events-none rounded-[24px]"
-            style={{
-              background: 'linear-gradient(110deg,transparent 35%,rgba(255,255,255,0.05) 50%,transparent 65%)',
-              borderRadius: 24,
-            }}
-            animate={{ x: ['-200%', '200%'] }}
-            transition={{ duration: 4.5, repeat: Infinity, repeatDelay: 2 }}
-          />
-
-          <div className="relative z-10 p-7">
-            <motion.div
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-5 text-[10px] font-black uppercase tracking-widest"
-              style={{ background: `${edu.color}18`, border: `1px solid ${edu.color}40`, color: edu.color }}
-              animate={{ boxShadow: [`0 0 0px ${edu.color}00`, `0 0 14px ${edu.color}50`, `0 0 0px ${edu.color}00`] }}
-              transition={{ duration: 3, repeat: Infinity }}
-            >
-              <Sparkles size={10} />
-              {edu.type === 'university' ? 'University' : edu.type === 'college' ? 'College' : 'School'}
-              <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: edu.color }} />
-            </motion.div>
-
-            <div className="flex gap-4 mb-5">
-              <motion.div
-                whileHover={{ rotate: [0, -10, 10, 0] }} transition={{ duration: 0.5 }}
-                className="flex-shrink-0 rounded-2xl flex items-center justify-center"
-                style={{ background: `${edu.color}15`, border: `1px solid ${edu.color}35`, width: 52, height: 52 }}
-              >
-                <edu.icon size={26} style={{ color: edu.color }} />
-              </motion.div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-black text-sm leading-snug mb-1.5 text-white" style={{ fontFamily: 'Syne,sans-serif' }}>
+        <div className="p-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30">
+                <edu.icon size={24} style={{ color: edu.color }} />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors">
                   {edu.degree}
                 </h3>
-                <div className="flex items-center gap-1.5 text-xs" style={{ color: '#94a3b8' }}>
-                  <Calendar size={11} style={{ color: edu.color }} />{edu.period}
+                <div className="flex items-center gap-2 text-sm text-gray-400 mt-1">
+                  <Calendar size={14} />
+                  <span>{edu.period}</span>
                 </div>
               </div>
             </div>
-
-            <div className="space-y-2 mb-5">
-              <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: '#cbd5e1' }}>
-                <School size={14} style={{ color: edu.color }} />{edu.institution}
-              </div>
-              <div className="flex items-center gap-2 text-xs" style={{ color: '#475569' }}>
-                <MapPin size={12} style={{ color: edu.colorAlt }} />{edu.location}
-              </div>
-            </div>
-
-            <motion.div
-              className="flex items-center gap-4 p-4 rounded-2xl mb-5"
-              style={{ background: `${edu.color}0d`, border: `1px solid ${edu.color}22` }}
-              whileHover={{ scale: 1.02 }}
-            >
-              {edu.cgpa ? <Award size={20} style={{ color: edu.color }} /> : <TrendingUp size={20} style={{ color: edu.color }} />}
-              <div className="flex-1">
-                <p className="text-[10px] uppercase tracking-widest font-bold mb-0.5" style={{ color: '#475569' }}>
-                  {edu.cgpa ? 'CGPA' : 'Percentage'}
-                </p>
-                <p className="text-2xl font-black leading-none" style={{ color: edu.color, fontFamily: 'Syne,sans-serif' }}>
-                  {edu.cgpa || edu.percentage}
-                </p>
-              </div>
-              <div className="w-24">
-                <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
-                  <motion.div
-                    className="h-full rounded-full"
-                    style={{ background: `linear-gradient(90deg,${edu.color},${edu.colorAlt})`, boxShadow: `0 0 8px ${edu.color}` }}
-                    initial={{ width: 0 }}
-                    animate={inView ? { width: edu.cgpa ? `${(parseFloat(edu.cgpa) / 10) * 100}%` : edu.percentage } : { width: 0 }}
-                    transition={{ duration: 1.4, delay: index * 0.25 + 0.6, ease: 'easeOut' }}
-                  />
+            <div className="flex items-center gap-3">
+              {edu.cgpa ? (
+                <div className="px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/30">
+                  <span className="text-green-400 font-semibold">CGPA: {edu.cgpa}</span>
                 </div>
-              </div>
-            </motion.div>
-
-            <div className="rounded-xl px-4 py-3 mb-5"
-              style={{ background: 'rgba(255,255,255,0.025)', borderLeft: `3px solid ${edu.color}` }}>
-              <p className="text-[10px] font-black uppercase tracking-widest mb-1" style={{ color: edu.color }}>🎯 Focus Area</p>
-              <p className="text-xs font-medium" style={{ color: '#94a3b8' }}>{edu.expertise}</p>
-            </div>
-
-            <div>
-              <button onClick={() => setExpanded(v => !v)} className="w-full flex items-center justify-between py-2 transition-colors">
-                <p className="text-[10px] uppercase tracking-widest font-black" style={{ color: '#475569' }}>Key Achievements</p>
-                <motion.div animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.3 }}>
-                  <ChevronDown size={14} style={{ color: '#475569' }} />
-                </motion.div>
-              </button>
-
-              <AnimatePresence>
-                {expanded && (
-                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.35 }} className="overflow-hidden">
-                    <div className="flex flex-wrap gap-1.5 pb-2 pt-1">
-                      {edu.achievements.map((a: string, i: number) => (
-                        <motion.span key={a} initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: i * 0.06, type: 'spring', stiffness: 150 }}
-                          className="px-2.5 py-1 rounded-full text-[10px] font-bold"
-                          style={{ background: `${edu.color}10`, border: `1px solid ${edu.color}25`, color: '#94a3b8' }}>
-                          {a}
-                        </motion.span>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              ) : (
+                <div className="px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30">
+                  <span className="text-blue-400 font-semibold">Percentage: {edu.percentage}</span>
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="absolute bottom-0 right-0 w-24 h-24 pointer-events-none rounded-br-[24px]"
-            style={{ opacity: hov ? 0.7 : 0.2, transition: 'opacity 0.3s', background: `radial-gradient(circle at 100% 100%,${edu.color}25,transparent 70%)` }} />
-        </motion.div>
+          <div className="space-y-2 mb-4">
+            <div className="flex items-center gap-2 text-gray-300">
+              <School size={16} className="text-cyan-400" />
+              <span>{edu.institution}</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-400">
+              <MapPin size={16} className="text-cyan-400" />
+              <span>{edu.location}</span>
+            </div>
+          </div>
+
+          <div className="mt-4 pt-4 border-t border-white/10">
+            <div className="flex items-center gap-2 mb-3">
+              <Sparkles size={14} className="text-cyan-400" />
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">🎯 Focus Area</p>
+            </div>
+            <p className="text-sm text-gray-300">{edu.expertise}</p>
+          </div>
+
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="mt-4 flex items-center gap-2 text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+          >
+            <span>{expanded ? 'Show less' : 'View achievements'}</span>
+            <motion.div animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.3 }}>
+              <ChevronDown size={14} />
+            </motion.div>
+          </button>
+
+          {expanded && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="mt-4 pt-3 border-t border-white/10"
+            >
+              <div className="flex flex-wrap gap-2">
+                {edu.achievements.map((a: string, i: number) => (
+                  <span
+                    key={i}
+                    className="px-2.5 py-1 rounded-full text-xs font-medium"
+                    style={{ background: `${edu.color}15`, border: `1px solid ${edu.color}30`, color: '#94a3b8' }}
+                  >
+                    {a}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </div>
       </div>
     </motion.div>
   )
@@ -447,47 +268,48 @@ const StatCard: React.FC<{ stat: any; index: number; inView: boolean }> = ({ sta
    MAIN EDUCATION COMPONENT
 ═══════════════════════════════════════════ */
 const Education: React.FC = () => {
-  const [mainRef, mainInView] = useInView({ triggerOnce: true, threshold: 0.04 })
-  const [activeTab, setActiveTab] = useState<'expertise' | 'timeline'>('expertise')
-  const { scrollYProgress } = useScroll()
-  const lineH = useSpring(useTransform(scrollYProgress, [0.2, 0.85], [0, 1]), { stiffness: 80, damping: 28 })
+  const [mainRef, mainInView] = useInView({ triggerOnce: true, threshold: 0.1 })
 
   const EDU_DATA = [
     {
       degree: 'Bachelor of Technology in Computer Science & Engineering',
-      institution: 'Lovely Professional University', location: 'Punjab, India',
-      period: "Aug '23 – Present", cgpa: '7.2', icon: GraduationCap, type: 'university',
-      color: '#3b82f6', colorAlt: '#06b6d4',
+      institution: 'Lovely Professional University',
+      location: 'Punjab, India',
+      period: "Aug '23 – Present",
+      cgpa: '7.2',
+      icon: GraduationCap,
+      type: 'university',
+      color: '#3b82f6',
+      colorAlt: '#06b6d4',
       achievements: ['Cloud Computing Specialization', 'DevOps Engineering Track', 'AWS Cloud Practitioner', 'Kubernetes & Docker Certified'],
       expertise: 'Cloud Engineer & DevOps Specialist',
     },
     {
       degree: 'Intermediate — Science Stream',
-      institution: 'Araria College Araria', location: 'Araria, Bihar',
-      period: "Apr '20 – Mar '22", percentage: '70.6%', icon: School, type: 'college',
-      color: '#a855f7', colorAlt: '#ec4899',
+      institution: 'Araria College Araria',
+      location: 'Araria, Bihar',
+      period: "Apr '20 – Mar '22",
+      percentage: '70.6%',
+      icon: School,
+      type: 'college',
+      color: '#a855f7',
+      colorAlt: '#ec4899',
       achievements: ['Science Stream', 'Mathematics Excellence', 'Computer Science Foundation'],
       expertise: 'Foundation in Computer Science',
     },
     {
       degree: 'Matriculation',
-      institution: 'L.S. High School Palasi Pategna Araria', location: 'Araria, Bihar',
-      period: "Apr '19 – Mar '20", percentage: '83.2%', icon: School, type: 'school',
-      color: '#10b981', colorAlt: '#14b8a6',
+      institution: 'L.S. High School Palasi Pategna Araria',
+      location: 'Araria, Bihar',
+      period: "Apr '19 – Mar '20",
+      percentage: '83.2%',
+      icon: School,
+      type: 'school',
+      color: '#10b981',
+      colorAlt: '#14b8a6',
       achievements: ['First Division', 'Science Background', 'Academic Excellence'],
       expertise: 'Strong Academic Foundation',
     },
-  ]
-
-  const EXPERTISE = [
-    { name: 'Cloud Architecture', icon: Cloud, skills: ['AWS', 'Azure', 'GCP'], level: 'Expert' },
-    { name: 'Container Orchestration', icon: Server, skills: ['Kubernetes', 'Docker', 'ECS'], level: 'Advanced' },
-    { name: 'CI/CD Pipelines', icon: GitBranch, skills: ['Jenkins', 'GitHub Actions', 'GitLab CI'], level: 'Expert' },
-    { name: 'IaC & Automation', icon: Code, skills: ['Terraform', 'Ansible', 'Pulumi'], level: 'Advanced' },
-    { name: 'Monitoring & Logging', icon: Terminal, skills: ['Prometheus', 'Grafana', 'ELK'], level: 'Advanced' },
-    { name: 'DevOps Tooling', icon: Cpu, skills: ['Helm', 'ArgoCD', 'Vault'], level: 'Expert' },
-    { name: 'Cloud Security', icon: Shield, skills: ['IAM', 'WAF', 'Secrets'], level: 'Intermediate' },
-    { name: 'Database Management', icon: Database, skills: ['RDS', 'DynamoDB', 'MongoDB'], level: 'Advanced' },
   ]
 
   const STATS = [
@@ -495,11 +317,6 @@ const Education: React.FC = () => {
     { label: 'Institutions', value: '3', suffix: '', icon: School, color: '#a855f7' },
     { label: 'Current CGPA', value: '7.2', suffix: '', icon: Star, color: '#f59e0b' },
     { label: 'Certifications', value: '5', suffix: '+', icon: Award, color: '#10b981' },
-  ]
-
-  const TABS = [
-    { id: 'expertise' as const, label: 'Core Expertise', icon: Zap },
-    { id: 'timeline' as const, label: 'Education', icon: GraduationCap },
   ]
 
   const TECH_BADGES = ['AWS', 'Kubernetes', 'Docker', 'Terraform', 'Jenkins', 'ArgoCD', 'Prometheus', 'Helm']
@@ -536,6 +353,7 @@ const Education: React.FC = () => {
 
       <div className="container mx-auto px-6 relative z-10">
 
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
@@ -557,10 +375,9 @@ const Education: React.FC = () => {
 
           <h2 className="font-black tracking-tight leading-none mb-5"
             style={{ fontFamily: 'Syne,sans-serif', fontSize: 'clamp(3rem,7vw,5.5rem)' }}>
-            <span className="text-white block">Education</span>
+            <span className="text-white block">Educations</span>
             <span className="block text-transparent bg-clip-text"
               style={{ backgroundImage: 'linear-gradient(135deg,#3b82f6,#06b6d4,#a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', filter: 'drop-shadow(0 0 30px rgba(59,130,246,0.4))' }}>
-              & Expertise
             </span>
           </h2>
 
@@ -579,6 +396,7 @@ const Education: React.FC = () => {
           </div>
         </motion.div>
 
+        {/* Tech Banner */}
         <motion.div
           initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.7, delay: 0.1 }}
@@ -616,64 +434,15 @@ const Education: React.FC = () => {
           </div>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.15 }}
-          className="flex justify-center gap-3 mb-12"
-        >
-          {TABS.map(tab => (
-            <motion.button key={tab.id} onClick={() => setActiveTab(tab.id)}
-              whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
-              className="relative flex items-center gap-2 px-7 py-3 rounded-full text-sm font-black overflow-hidden"
-              style={activeTab === tab.id ? {
-                background: 'linear-gradient(135deg,#3b82f6,#06b6d4)',
-                color: '#fff', boxShadow: '0 0 24px rgba(59,130,246,0.45)', fontFamily: 'Syne,sans-serif'
-              } : {
-                background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.18)', color: '#475569', fontFamily: 'Syne,sans-serif'
-              }}
-            >
-              {activeTab === tab.id && (
-                <motion.div layoutId="tabSlider" className="absolute inset-0"
-                  style={{ background: 'linear-gradient(135deg,#3b82f6,#06b6d4)' }} />
-              )}
-              <tab.icon size={14} className="relative" />
-              <span className="relative">{tab.label}</span>
-            </motion.button>
+        {/* Education Cards */}
+        <div ref={mainRef} className="max-w-4xl mx-auto">
+          <h3 className="text-2xl font-bold text-center mb-8 text-white">Academic Journey</h3>
+          {EDU_DATA.map((edu, i) => (
+            <EduCard key={i} edu={edu} index={i} inView={mainInView} />
           ))}
-        </motion.div>
-
-        <div ref={mainRef}>
-          <AnimatePresence mode="wait">
-            {activeTab === 'expertise' && (
-              <motion.div key="exp"
-                initial={{ opacity: 0, y: 25, filter: 'blur(6px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, y: -25, filter: 'blur(6px)' }} transition={{ duration: 0.45 }}
-                className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"
-              >
-                {EXPERTISE.map((area, i) => <ExpertCard key={area.name} area={area} index={i} inView={mainInView} />)}
-              </motion.div>
-            )}
-
-            {activeTab === 'timeline' && (
-              <motion.div key="timeline"
-                initial={{ opacity: 0, y: 25, filter: 'blur(6px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, y: -25, filter: 'blur(6px)' }} transition={{ duration: 0.45 }}
-                className="relative"
-              >
-                <div className="absolute left-8 md:left-1/2 md:-translate-x-px top-0 bottom-20 w-px overflow-visible">
-                  <motion.div className="w-full h-full rounded-full"
-                    style={{ background: 'linear-gradient(180deg,#3b82f6,#06b6d4,#a855f7)', scaleY: lineH, transformOrigin: 'top' }}
-                  />
-                  <motion.div className="absolute left-1/2 -translate-x-1/2 w-4 h-4 rounded-full -translate-x-[7px]"
-                    style={{ background: '#60a5fa', boxShadow: '0 0 16px #60a5fa', top: useTransform(lineH, [0, 1], ['0%', '100%']) }}
-                  />
-                </div>
-                {EDU_DATA.map((edu, i) => <EduCard key={i} edu={edu} index={i} inView={mainInView} />)}
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
 
+        {/* Stats */}
         <motion.div
           initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.7, delay: 0.1 }}
