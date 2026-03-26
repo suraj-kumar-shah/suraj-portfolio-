@@ -9,7 +9,9 @@ import {
 // Method 1: Using URL constructor (no TypeScript issues)
 const profileImage = new URL('../assets/projects/profile.jpeg', import.meta.url).href
 
-// Rest of your code remains the same...
+// Resume file - make sure to place your resume PDF in the assets folder
+// or change the path to where your resume is located
+const resumeFile = new URL('../assets/resume.pdf', import.meta.url).href
 
 /* ═══════════════════════════════════════════
    TYPEWRITER HOOK
@@ -317,6 +319,21 @@ const ROLES = ['Cloud Engineer', 'DevOps Specialist', 'Full Stack Developer', 'S
 const Hero: React.FC = () => {
   const typedRole = useTypewriter(ROLES, 65, 38, 1800)
 
+  const handleDownloadResume = () => {
+    try {
+      const link = document.createElement('a')
+      link.href = resumeFile
+      link.download = 'Suraj_Kumar_Sah_Resume.pdf'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    } catch (error) {
+      console.error('Error downloading resume:', error)
+      // Fallback: Open in new tab if download fails
+      window.open(resumeFile, '_blank')
+    }
+  }
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
 
@@ -463,9 +480,11 @@ const Hero: React.FC = () => {
                 <SocialBtn href="https://www.hackerrank.com/profile/surajshah72600"     icon={Award}     label="HackerRank" delay={0.99} color="#34d399" />
               </div>
 
-              <motion.a href="/resume.pdf" download
-                whileHover={{ scale:1.05, y:-3 }} whileTap={{ scale:0.96 }}
-                className="relative group flex items-center gap-2.5 px-6 py-3 rounded-2xl font-bold text-sm overflow-hidden"
+              <motion.button
+                onClick={handleDownloadResume}
+                whileHover={{ scale:1.05, y:-3 }} 
+                whileTap={{ scale:0.96 }}
+                className="relative group flex items-center gap-2.5 px-6 py-3 rounded-2xl font-bold text-sm overflow-hidden cursor-pointer"
                 style={{ background:'linear-gradient(135deg,rgba(34,211,238,0.18),rgba(129,140,248,0.15))', border:'1px solid rgba(34,211,238,0.35)', color:'#22d3ee' }}
               >
                 <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/8 to-transparent skew-x-12" />
@@ -474,7 +493,7 @@ const Hero: React.FC = () => {
                 <motion.div className="relative" animate={{ x:[0,4,0] }} transition={{ duration:1.6, repeat:Infinity }}>
                   <ChevronRight size={14} />
                 </motion.div>
-              </motion.a>
+              </motion.button>
             </motion.div>
           </div>
 
@@ -502,6 +521,19 @@ const Hero: React.FC = () => {
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Add custom keyframes for gradient animation */}
+      <style>{`
+        @keyframes gradient {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .animate-gradient {
+          background-size: 200% 200%;
+          animation: gradient 3s ease infinite;
+        }
+      `}</style>
     </section>
   )
 }
